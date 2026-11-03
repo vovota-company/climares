@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLIMARES · Climate Intelligence & Resilience</title>
+  <!-- Tailwind CSS (v3) CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome 6 (free) for modern icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- AOS (Animate On Scroll) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+
+    /* Full-width self-sliding carousel for Strategic Areas */
+    .carousel-fullwidth {
+      position: relative;
+      width: 100%;
+      height: 80vh;
+      overflow: hidden;
+    }
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.9s ease-in-out;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .carousel-slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+    .carousel-slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(11,43,63,0.75) 0%, rgba(26,95,110,0.65) 100%);
+    }
+    .carousel-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      padding: 0 24px;
+      color: white;
+    }
+    .carousel-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .carousel-dot.active {
+      background: #14b8a6;
+    }
+
+    /* Section underline */
+    .section-title-underline {
+      position: relative;
+      display: inline-block;
+    }
+    .section-title-underline::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -8px;
+      width: 60px;
+      height: 4px;
+      background: #14b8a6;
+      border-radius: 999px;
+    }
+
+    /* Website title banner */
+    .site-title-banner {
+      background: linear-gradient(135deg, #0b2b3f 0%, #1a5f6e 100%);
+      color: #e0f2fe;
+      padding: 14px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    /* Language switcher styles */
+    .lang-btn {
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .lang-btn.active {
+      background-color: #14b8a6;
+      color: white;
+      border-color: #14b8a6;
+    }
+    .lang-btn:not(.active) {
+      color: #cbd5e1;
+    }
+    .lang-btn:not(.active):hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    /* CLIMARES full form under logo */
+    .logo-fullform {
+      font-size: 0.55rem;
+      letter-spacing: 0.3px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- WEBSITE TITLE (institutional name) - NOT in nav or header -->
+  <div class="site-title-banner" data-i18n="siteTitle">
+    <i class="fas fa-landmark mr-2"></i>National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development
+  </div>
+
+  <!-- Navigation (sticky) -->
+  <nav id="navbar" class="sticky top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 bg-slate-900/95 backdrop-blur-md shadow-lg text-white">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        {% load static %}
+        <img src="{% static 'logo/climares.png' %}" alt="CLIMARES Logo" class="h-9 w-9 object-contain">
+        <div class="flex flex-col leading-tight">
+          <span class="font-bold text-2xl tracking-tight">CLIMARES<span class="text-teal-300">.</span></span>
+          <span class="logo-fullform" data-i18n="logoFullForm">CLIMATE RESILIENCE AND RESEARCH</span>
+        </div>
+      </div>
+      <div class="hidden md:flex space-x-6 text-sm font-medium">
+        <a href="#about" class="hover:text-teal-300 transition" data-i18n="navAbout">About</a>
+        <a href="#strategic-areas" class="hover:text-teal-300 transition" data-i18n="navStrategic">Strategic Areas</a>
+        <a href="#approach" class="hover:text-teal-300 transition" data-i18n="navApproach">Approach</a>
+        <a href="#projects" class="hover:text-teal-300 transition" data-i18n="navProjects">Projects</a>
+        <a href="#research" class="hover:text-teal-300 transition" data-i18n="navResearch">Research</a>
+        <a href="#partnerships" class="hover:text-teal-300 transition" data-i18n="navPartners">Partners</a>
+        <a href="#contact" class="hover:text-teal-300 transition" data-i18n="navContact">Contact</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <div class="flex gap-1 items-center">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+        <a href="#contact" class="hidden md:inline-block bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition shadow-lg shadow-teal-600/30">
+          <span data-i18n="navGetInTouch">Get in touch</span> <i class="fas fa-arrow-right ml-1 text-xs"></i>
+        </a>
+        <button id="mobile-menu-btn" class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden mt-4 bg-slate-800/95 backdrop-blur rounded-xl p-5 text-white space-y-4 absolute left-6 right-6 top-20 shadow-2xl">
+      <a href="#about" class="block hover:text-teal-300" data-i18n="navAbout">About</a>
+      <a href="#strategic-areas" class="block hover:text-teal-300" data-i18n="navStrategic">Strategic Areas</a>
+      <a href="#approach" class="block hover:text-teal-300" data-i18n="navApproach">Approach</a>
+      <a href="#projects" class="block hover:text-teal-300" data-i18n="navProjects">Projects</a>
+      <a href="#research" class="block hover:text-teal-300" data-i18n="navResearch">Research</a>
+      <a href="#partnerships" class="block hover:text-teal-300" data-i18n="navPartners">Partners</a>
+      <a href="#contact" class="block hover:text-teal-300" data-i18n="navContact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
+    <div class="absolute inset-0 bg-climares-gradient opacity-90 z-0" style="background: linear-gradient(135deg, #0b2b3f 0%, #1a5f6e 100%);"></div>
+    <div class="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+    <div class="absolute inset-0 z-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <div class="relative z-10 max-w-5xl px-6" data-aos="fade-up">
+      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-6">
+        <span data-i18n="heroTitlePart1">Transforming</span> <span class="text-teal-300" data-i18n="heroTitlePart2">Science</span> <span data-i18n="heroTitlePart3">into Action</span>
+      </h1>
+      <p class="text-xl md:text-2xl font-light mb-8 text-slate-200 max-w-4xl mx-auto" data-i18n="heroSubtitle">
+        National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#strategic-areas" class="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition shadow-xl shadow-teal-500/30 flex items-center justify-center gap-2">
+          <i class="fas fa-chart-line"></i> <span data-i18n="heroBtnExplore">Explore our work</span>
+        </a>
+        <a href="#about" class="border border-white/40 hover:border-white/80 text-white px-8 py-4 rounded-full font-semibold text-lg transition flex items-center justify-center gap-2 backdrop-blur-sm">
+          <i class="fas fa-circle-info"></i> <span data-i18n="heroBtnLearn">Learn more</span>
+        </a>
+      </div>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/70">
+      <i class="fas fa-chevron-down text-2xl"></i>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section id="about" class="py-20 px-6 md:px-12 bg-white">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div data-aos="fade-right">
+          <h2 class="text-4xl font-bold text-slate-800 mb-2 section-title-underline" data-i18n="aboutTitle">About CLIMARES</h2>
+          <p class="text-lg text-slate-600 mt-8 leading-relaxed" data-i18n="aboutText1">
+            CLIMARES is a scientific, technical and technological institution under Burundian law specializing in knowledge production, innovation development, risk analysis and decision support in climate change, environment, hydrometeorology, natural resource management, disaster risk reduction and sustainable development.
+          </p>
+          <p class="text-lg text-slate-600 mt-4 leading-relaxed" data-i18n="aboutText2">
+            Through scientific excellence and data valorization, we support governments, international organizations, universities and the private sector in building climate resilience and evidence-based sustainable development.
+          </p>
+          <div class="mt-8 flex gap-4">
+            <div class="flex items-center gap-3 bg-teal-50 px-4 py-3 rounded-xl">
+              <i class="fas fa-bullseye text-teal-600 text-xl"></i>
+              <span class="font-semibold" data-i18n="aboutVision">Vision: Regional hub of excellence</span>
+            </div>
+          </div>
+        </div>
+        <div class="relative" data-aos="fade-left">
+          <div class="rounded-3xl overflow-hidden shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?q=80&w=2070&auto=format&fit=crop" alt="Research and climate" class="w-full h-auto object-cover">
+          </div>
+          <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl hidden md:block border-l-4 border-teal-500">
+            <p class="text-sm font-semibold"><i class="fas fa-microscope text-teal-600 mr-2"></i><span data-i18n="aboutBadge">Applied research & innovation</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRATEGIC AREAS - FULL-WIDTH SELF-SLIDING IMAGE CAROUSEL -->
+  <section id="strategic-areas" class="py-20 bg-slate-100">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 mb-12">
+      <div class="text-center" data-aos="fade-up">
+        <h2 class="text-4xl font-bold text-slate-800 inline-block section-title-underline" data-i18n="strategicTitle">Strategic Areas</h2>
+        <p class="text-slate-600 mt-6 max-w-2xl mx-auto text-lg" data-i18n="strategicSubtitle">Our key domains of intervention, driving resilience and sustainable development.</p>
+      </div>
+    </div>
+
+    <!-- Full-width carousel -->
+    <div class="carousel-fullwidth" id="strategicCarousel">
+      <!-- Slide 1: Climate & Climate Services -->
+      <div class="carousel-slide active" style="background-image: url('https://images.unsplash.com/photo-1561484930-998b6a7b22e8?q=80&w=2070&auto=format&fit=crop');">
+        <div class="carousel-content">
+          <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide1Title">Climate & Climate Services</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide1Desc">Integrated climate services for planning, risk management and resilience of socio-economic systems.</p>
+          <div class="flex flex-wrap gap-3 justify-center text-sm">
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-cloud-sun mr-1 text-teal-300"></i> <span data-i18n="slide1Tag1">Weather & climate forecasts</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-chart-line mr-1 text-teal-300"></i> <span data-i18n="slide1Tag2">Climate variability & extremes</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-file-alt mr-1 text-teal-300"></i> <span data-i18n="slide1Tag3">Adaptation planning</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-coins mr-1 text-teal-300"></i> <span data-i18n="slide1Tag4">Climate finance</span></span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2: Hydrology & Water Resources -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2070&auto=format&fit=crop');">
+        <div class="carousel-content">
+          <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide2Title">Hydrology & Water Resources</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide2Desc">Scientific and operational solutions for integrated water resource management.</p>
+          <div class="flex flex-wrap gap-3 justify-center text-sm">
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-water mr-1 text-teal-300"></i> <span data-i18n="slide2Tag1">Hydrological modelling</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-exclamation-triangle mr-1 text-teal-300"></i> <span data-i18n="slide2Tag2">Flood & drought forecasting</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-chart-pie mr-1 text-teal-300"></i> <span data-i18n="slide2Tag3">IWRM</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-satellite-dish mr-1 text-teal-300"></i> <span data-i18n="slide2Tag4">Hydroclimatic monitoring</span></span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3: Disaster Risk Reduction -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070&auto=format&fit=crop');">
+        <div class="carousel-content">
+          <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide3Title">Disaster Risk Reduction</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide3Desc">Supporting institutions in the identification, assessment and management of climate-related risks.</p>
+          <div class="flex flex-wrap gap-3 justify-center text-sm">
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-mountain mr-1 text-teal-300"></i> <span data-i18n="slide3Tag1">Multi-hazard assessment</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-map-marked-alt mr-1 text-teal-300"></i> <span data-i18n="slide3Tag2">Risk mapping</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-clock mr-1 text-teal-300"></i> <span data-i18n="slide3Tag3">Anticipatory action</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-people-arrows mr-1 text-teal-300"></i> <span data-i18n="slide3Tag4">Community risk management</span></span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4: Scientific Research & Development -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop');">
+        <div class="carousel-content">
+          <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide4Title">Scientific Research & Development</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide4Desc">Research forms the basis of CLIMARES' activities, driving innovation and evidence.</p>
+          <div class="flex flex-wrap gap-3 justify-center text-sm">
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-leaf mr-1 text-teal-300"></i> <span data-i18n="slide4Tag1">Climate change & environment</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-seedling mr-1 text-teal-300"></i> <span data-i18n="slide4Tag2">Climate-smart agriculture</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-robot mr-1 text-teal-300"></i> <span data-i18n="slide4Tag3">Applied AI</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-globe mr-1 text-teal-300"></i> <span data-i18n="slide4Tag4">Sustainable energy</span></span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 5: Digital Transformation, AI & Data Science -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop');">
+        <div class="carousel-content">
+          <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide5Title">Digital Transformation & AI</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide5Desc">Advanced digital solutions for environmental and climate data.</p>
+          <div class="flex flex-wrap gap-3 justify-center text-sm">
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-brain mr-1 text-teal-300"></i> <span data-i18n="slide5Tag1">Artificial intelligence</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-database mr-1 text-teal-300"></i> <span data-i18n="slide5Tag2">Data science</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-map mr-1 text-teal-300"></i> <span data-i18n="slide5Tag3">GIS & remote sensing</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-cloud mr-1 text-teal-300"></i> <span data-i18n="slide5Tag4">Cloud computing</span></span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 6: Training & Capacity Building -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop');">
+        <div class="carousel-content">
+          <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide6Title">Training & Capacity Building</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide6Desc">Developing human capital through professional training and capacity strengthening.</p>
+          <div class="flex flex-wrap gap-3 justify-center text-sm">
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-certificate mr-1 text-teal-300"></i> <span data-i18n="slide6Tag1">Professional training</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-users mr-1 text-teal-300"></i> <span data-i18n="slide6Tag2">Institutional capacity</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-graduation-cap mr-1 text-teal-300"></i> <span data-i18n="slide6Tag3">Academic supervision</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-handshake mr-1 text-teal-300"></i> <span data-i18n="slide6Tag4">Mentoring programs</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carousel dots -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3" id="carouselDots">
+        <button data-slide="0" class="carousel-dot active"></button>
+        <button data-slide="1" class="carousel-dot"></button>
+        <button data-slide="2" class="carousel-dot"></button>
+        <button data-slide="3" class="carousel-dot"></button>
+        <button data-slide="4" class="carousel-dot"></button>
+        <button data-slide="5" class="carousel-dot"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Institutional Approach (short) -->
+  <section id="approach" class="py-20 px-6 md:px-12 bg-white">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="approachTitle">Institutional Approach</h2>
+      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="approachSubtitle">Integration of science, innovation and action structured around four strategic axes.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up">
+          <i class="fas fa-flask text-3xl text-teal-600 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach1Title">Knowledge valorization</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach1Desc">Collection, processing, analysis & dissemination of scientific data.</p>
+        </div>
+        <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up" data-aos-delay="50">
+          <i class="fas fa-chart-simple text-3xl text-teal-600 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach2Title">Decision support systems</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach2Desc">Digital platforms & alert systems transforming data into action.</p>
+        </div>
+        <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up" data-aos-delay="100">
+          <i class="fas fa-building text-3xl text-teal-600 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach3Title">Institutional strengthening</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach3Desc">Technical, organizational and operational capacity development.</p>
+        </div>
+        <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up" data-aos-delay="150">
+          <i class="fas fa-hand-holding-heart text-3xl text-teal-600 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach4Title">Resilient policies</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach4Desc">Analyses and recommendations to integrate climate risks in decisions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects" class="py-20 px-6 md:px-12 bg-slate-50">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="projectsTitle">Projects</h2>
+      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="projectsSubtitle">Explore our portfolio of climate resilience and sustainable development projects.</p>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2070&auto=format&fit=crop" alt="Project" class="h-40 w-full object-cover">
+          <div class="p-5">
+            <h3 class="font-bold text-lg" data-i18n="project1Title">Climate Early Warning System</h3>
+            <p class="text-slate-600 text-sm mt-2" data-i18n="project1Desc">Community-based early warning systems in disaster-prone regions.</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=2070&auto=format&fit=crop" alt="Project" class="h-40 w-full object-cover">
+          <div class="p-5">
+            <h3 class="font-bold text-lg" data-i18n="project2Title">Water Resource Mapping</h3>
+            <p class="text-slate-600 text-sm mt-2" data-i18n="project2Desc">Hydrological assessments for sustainable water management.</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=2070&auto=format&fit=crop" alt="Project" class="h-40 w-full object-cover">
+          <div class="p-5">
+            <h3 class="font-bold text-lg" data-i18n="project3Title">Climate-Smart Agriculture</h3>
+            <p class="text-slate-600 text-sm mt-2" data-i18n="project3Desc">Promoting resilient farming practices across Burundi.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Section -->
+  <section id="research" class="py-20 px-6 md:px-12 bg-white">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="researchTitle">Research & Innovation</h2>
+      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="researchSubtitle">Cutting-edge research driving technological innovation and scientific excellence.</p>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-slate-50 p-8 rounded-3xl">
+          <i class="fas fa-microscope text-4xl text-teal-600 mb-4"></i>
+          <h3 class="font-bold text-2xl mb-3" data-i18n="research1Title">Applied Research Programs</h3>
+          <p class="text-slate-600" data-i18n="research1Desc">Our research focuses on climate change, environmental sciences, climate-smart agriculture, health and climate, sustainable energy, digital technologies, and applied artificial intelligence.</p>
+        </div>
+        <div class="bg-slate-50 p-8 rounded-3xl">
+          <i class="fas fa-lightbulb text-4xl text-teal-600 mb-4"></i>
+          <h3 class="font-bold text-2xl mb-3" data-i18n="research2Title">Innovation & Incubation</h3>
+          <p class="text-slate-600" data-i18n="research2Desc">We promote applied research, technological innovation, prototype development, incubation of innovative projects, technology transfer, and support for young researchers and innovators.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partnerships -->
+  <section id="partnerships" class="py-20 px-6 md:px-12 bg-slate-800 text-white">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-center mb-4 text-white section-title-underline" data-i18n="partnersTitle">Partnerships & Cooperation</h2>
+      <p class="text-center text-slate-300 max-w-3xl mx-auto mb-12" data-i18n="partnersSubtitle">Strategic partnerships with national, regional and international institutions.</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div class="p-4"><i class="fas fa-globe-americas text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner1">UN Agencies</p></div>
+        <div class="p-4"><i class="fas fa-university text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner2">Universities</p></div>
+        <div class="p-4"><i class="fas fa-chart-line text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner3">Financial Inst.</p></div>
+        <div class="p-4"><i class="fas fa-users text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner4">Civil Society</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / Address footer -->
+  <footer id="contact" class="bg-slate-900 text-slate-300 pt-16 pb-8 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
+      <div>
+        <div class="flex items-center gap-2 text-white mb-4">
+          <img src="{% static 'logo/climares.png' %}" alt="CLIMARES Logo" class="h-9 w-9 object-contain">
+          <span class="font-bold text-2xl">CLIMARES<span class="text-teal-400">.</span></span>
+        </div>
+        <p class="text-sm leading-relaxed" data-i18n="footerTagline">Research • Innovation • Climate Intelligence • Decision Support • Resilience • Sustainable Development</p>
+        <p class="mt-4 text-sm italic text-teal-300/80" data-i18n="footerQuote">"Transforming Science into Action for a Resilient and Sustainable Future."</p>
+      </div>
+      <div>
+        <h4 class="text-white font-bold text-lg mb-4" data-i18n="footerContactTitle">Contact</h4>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-start gap-3"><i class="fas fa-map-pin text-teal-400 mt-1"></i> <span data-i18n="footerAddress">Mukaza-Rohero, Avenue de l'université, Hôtel de ville - Rez de chaussée, Bureau No4</span></li>
+          <li class="flex items-start gap-3"><i class="fas fa-envelope text-teal-400 mt-1"></i> infos@climares.com</li>
+          <li class="flex items-start gap-3"><i class="fas fa-phone text-teal-400 mt-1"></i> +257 61 33 82 12</li>
+          <li class="flex items-start gap-3"><i class="fas fa-phone text-teal-400 mt-1"></i> +251 93 81 99 588</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold text-lg mb-4" data-i18n="footerLinksTitle">Quick Links</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#about" class="hover:text-teal-400" data-i18n="navAbout">About</a></li>
+          <li><a href="#strategic-areas" class="hover:text-teal-400" data-i18n="navStrategic">Strategic Areas</a></li>
+          <li><a href="#approach" class="hover:text-teal-400" data-i18n="navApproach">Approach</a></li>
+          <li><a href="#projects" class="hover:text-teal-400" data-i18n="navProjects">Projects</a></li>
+          <li><a href="#research" class="hover:text-teal-400" data-i18n="navResearch">Research</a></li>
+          <li><a href="#partnerships" class="hover:text-teal-400" data-i18n="navPartners">Partners</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-slate-800 mt-12 pt-6 text-center text-xs text-slate-500">
+      <span data-i18n="footerCopyright">© 2025 CLIMARES. All rights reserved. | Designed for impact.</span>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // ===== TRANSLATIONS =====
+    const translations = {
+      en: {
+        siteTitle: "National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development",
+        logoFullForm: "CLIMATE RESILIENCE AND RESEARCH",
+        navAbout: "About",
+        navStrategic: "Strategic Areas",
+        navApproach: "Approach",
+        navProjects: "Projects",
+        navResearch: "Research",
+        navPartners: "Partners",
+        navContact: "Contact",
+        navGetInTouch: "Get in touch",
+        heroTitlePart1: "Transforming",
+        heroTitlePart2: "Science",
+        heroTitlePart3: "into Action",
+        heroSubtitle: "National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development",
+        heroBtnExplore: "Explore our work",
+        heroBtnLearn: "Learn more",
+        aboutTitle: "About CLIMARES",
+        aboutText1: "CLIMARES is a scientific, technical and technological institution under Burundian law specializing in knowledge production, innovation development, risk analysis and decision support in climate change, environment, hydrometeorology, natural resource management, disaster risk reduction and sustainable development.",
+        aboutText2: "Through scientific excellence and data valorization, we support governments, international organizations, universities and the private sector in building climate resilience and evidence-based sustainable development.",
+        aboutVision: "Vision: Regional hub of excellence",
+        aboutBadge: "Applied research & innovation",
+        strategicTitle: "Strategic Areas",
+        strategicSubtitle: "Our key domains of intervention, driving resilience and sustainable development.",
+        slideStrategicAreaLabel: "Strategic Area",
+        slide1Title: "Climate & Climate Services",
+        slide1Desc: "Integrated climate services for planning, risk management and resilience of socio-economic systems.",
+        slide1Tag1: "Weather & climate forecasts",
+        slide1Tag2: "Climate variability & extremes",
+        slide1Tag3: "Adaptation planning",
+        slide1Tag4: "Climate finance",
+        slide2Title: "Hydrology & Water Resources",
+        slide2Desc: "Scientific and operational solutions for integrated water resource management.",
+        slide2Tag1: "Hydrological modelling",
+        slide2Tag2: "Flood & drought forecasting",
+        slide2Tag3: "IWRM",
+        slide2Tag4: "Hydroclimatic monitoring",
+        slide3Title: "Disaster Risk Reduction",
+        slide3Desc: "Supporting institutions in the identification, assessment and management of climate-related risks.",
+        slide3Tag1: "Multi-hazard assessment",
+        slide3Tag2: "Risk mapping",
+        slide3Tag3: "Anticipatory action",
+        slide3Tag4: "Community risk management",
+        slide4Title: "Scientific Research & Development",
+        slide4Desc: "Research forms the basis of CLIMARES' activities, driving innovation and evidence.",
+        slide4Tag1: "Climate change & environment",
+        slide4Tag2: "Climate-smart agriculture",
+        slide4Tag3: "Applied AI",
+        slide4Tag4: "Sustainable energy",
+        slide5Title: "Digital Transformation & AI",
+        slide5Desc: "Advanced digital solutions for environmental and climate data.",
+        slide5Tag1: "Artificial intelligence",
+        slide5Tag2: "Data science",
+        slide5Tag3: "GIS & remote sensing",
+        slide5Tag4: "Cloud computing",
+        slide6Title: "Training & Capacity Building",
+        slide6Desc: "Developing human capital through professional training and capacity strengthening.",
+        slide6Tag1: "Professional training",
+        slide6Tag2: "Institutional capacity",
+        slide6Tag3: "Academic supervision",
+        slide6Tag4: "Mentoring programs",
+        approachTitle: "Institutional Approach",
+        approachSubtitle: "Integration of science, innovation and action structured around four strategic axes.",
+        approach1Title: "Knowledge valorization",
+        approach1Desc: "Collection, processing, analysis & dissemination of scientific data.",
+        approach2Title: "Decision support systems",
+        approach2Desc: "Digital platforms & alert systems transforming data into action.",
+        approach3Title: "Institutional strengthening",
+        approach3Desc: "Technical, organizational and operational capacity development.",
+        approach4Title: "Resilient policies",
+        approach4Desc: "Analyses and recommendations to integrate climate risks in decisions.",
+        projectsTitle: "Projects",
+        projectsSubtitle: "Explore our portfolio of climate resilience and sustainable development projects.",
+        project1Title: "Climate Early Warning System",
+        project1Desc: "Community-based early warning systems in disaster-prone regions.",
+        project2Title: "Water Resource Mapping",
+        project2Desc: "Hydrological assessments for sustainable water management.",
+        project3Title: "Climate-Smart Agriculture",
+        project3Desc: "Promoting resilient farming practices across Burundi.",
+        researchTitle: "Research & Innovation",
+        researchSubtitle: "Cutting-edge research driving technological innovation and scientific excellence.",
+        research1Title: "Applied Research Programs",
+        research1Desc: "Our research focuses on climate change, environmental sciences, climate-smart agriculture, health and climate, sustainable energy, digital technologies, and applied artificial intelligence.",
+        research2Title: "Innovation & Incubation",
+        research2Desc: "We promote applied research, technological innovation, prototype development, incubation of innovative projects, technology transfer, and support for young researchers and innovators.",
+        partnersTitle: "Partnerships & Cooperation",
+        partnersSubtitle: "Strategic partnerships with national, regional and international institutions.",
+        partner1: "UN Agencies",
+        partner2: "Universities",
+        partner3: "Financial Inst.",
+        partner4: "Civil Society",
+        footerTagline: "Research • Innovation • Climate Intelligence • Decision Support • Resilience • Sustainable Development",
+        footerQuote: "\"Transforming Science into Action for a Resilient and Sustainable Future.\"",
+        footerContactTitle: "Contact",
+        footerAddress: "Mukaza-Rohero, Avenue de l'université, Hôtel de ville - Rez de chaussée, Bureau No4",
+        footerLinksTitle: "Quick Links",
+        footerCopyright: "© 2025 CLIMARES. All rights reserved. | Designed for impact."
+      },
+      fr: {
+        siteTitle: "Centre National de Recherche, d'Innovation, de Formation et d'Aide à la Décision pour le Climat, l'Environnement et le Développement Durable",
+        logoFullForm: "RÉSILIENCE CLIMATIQUE ET RECHERCHE",
+        navAbout: "À propos",
+        navStrategic: "Domaines stratégiques",
+        navApproach: "Approche",
+        navProjects: "Projets",
+        navResearch: "Recherche",
+        navPartners: "Partenaires",
+        navContact: "Contact",
+        navGetInTouch: "Contactez-nous",
+        heroTitlePart1: "Transformer",
+        heroTitlePart2: "la Science",
+        heroTitlePart3: "en Action",
+        heroSubtitle: "Centre National de Recherche, d'Innovation, de Formation et d'Aide à la Décision pour le Climat, l'Environnement et le Développement Durable",
+        heroBtnExplore: "Découvrir nos actions",
+        heroBtnLearn: "En savoir plus",
+        aboutTitle: "À propos de CLIMARES",
+        aboutText1: "CLIMARES est une institution scientifique, technique et technologique de droit burundais spécialisée dans la production de connaissances, le développement de l'innovation, l'analyse des risques et l'aide à la décision dans les domaines du changement climatique, de l'environnement, de l'hydrométéorologie, de la gestion des ressources naturelles, de la réduction des risques de catastrophes et du développement durable.",
+        aboutText2: "Grâce à l'excellence scientifique et à la valorisation des données, nous soutenons les gouvernements, les organisations internationales, les universités et le secteur privé dans le renforcement de la résilience climatique et le développement durable fondé sur des preuves.",
+        aboutVision: "Vision : Pôle régional d'excellence",
+        aboutBadge: "Recherche appliquée et innovation",
+        strategicTitle: "Domaines stratégiques",
+        strategicSubtitle: "Nos principaux domaines d'intervention, moteurs de résilience et de développement durable.",
+        slideStrategicAreaLabel: "Domaine stratégique",
+        slide1Title: "Climat et Services Climatiques",
+        slide1Desc: "Services climatiques intégrés pour la planification, la gestion des risques et la résilience des systèmes socio-économiques.",
+        slide1Tag1: "Prévisions météo et climatiques",
+        slide1Tag2: "Variabilité et extrêmes climatiques",
+        slide1Tag3: "Planification de l'adaptation",
+        slide1Tag4: "Finance climatique",
+        slide2Title: "Hydrologie et Ressources en Eau",
+        slide2Desc: "Solutions scientifiques et opérationnelles pour la gestion intégrée des ressources en eau.",
+        slide2Tag1: "Modélisation hydrologique",
+        slide2Tag2: "Prévision des crues et sécheresses",
+        slide2Tag3: "GIRE",
+        slide2Tag4: "Suivi hydroclimatique",
+        slide3Title: "Réduction des Risques de Catastrophes",
+        slide3Desc: "Soutien aux institutions dans l'identification, l'évaluation et la gestion des risques liés au climat.",
+        slide3Tag1: "Évaluation multi-aléas",
+        slide3Tag2: "Cartographie des risques",
+        slide3Tag3: "Action anticipatoire",
+        slide3Tag4: "Gestion communautaire des risques",
+        slide4Title: "Recherche Scientifique et Développement",
+        slide4Desc: "La recherche constitue la base des activités de CLIMARES, moteur d'innovation et de preuves.",
+        slide4Tag1: "Changement climatique et environnement",
+        slide4Tag2: "Agriculture intelligente face au climat",
+        slide4Tag3: "IA appliquée",
+        slide4Tag4: "Énergie durable",
+        slide5Title: "Transformation Numérique et IA",
+        slide5Desc: "Solutions numériques avancées pour les données environnementales et climatiques.",
+        slide5Tag1: "Intelligence artificielle",
+        slide5Tag2: "Science des données",
+        slide5Tag3: "SIG et télédétection",
+        slide5Tag4: "Informatique en nuage",
+        slide6Title: "Formation et Renforcement des Capacités",
+        slide6Desc: "Développement du capital humain par la formation professionnelle et le renforcement des capacités.",
+        slide6Tag1: "Formation professionnelle",
+        slide6Tag2: "Capacité institutionnelle",
+        slide6Tag3: "Encadrement académique",
+        slide6Tag4: "Programmes de mentorat",
+        approachTitle: "Approche Institutionnelle",
+        approachSubtitle: "Intégration de la science, de l'innovation et de l'action structurée autour de quatre axes stratégiques.",
+        approach1Title: "Valorisation des connaissances",
+        approach1Desc: "Collecte, traitement, analyse et diffusion des données scientifiques.",
+        approach2Title: "Systèmes d'aide à la décision",
+        approach2Desc: "Plateformes numériques et systèmes d'alerte transformant les données en action.",
+        approach3Title: "Renforcement institutionnel",
+        approach3Desc: "Développement des capacités techniques, organisationnelles et opérationnelles.",
+        approach4Title: "Politiques résilientes",
+        approach4Desc: "Analyses et recommandations pour intégrer les risques climatiques dans les décisions.",
+        projectsTitle: "Projets",
+        projectsSubtitle: "Explorez notre portefeuille de projets de résilience climatique et de développement durable.",
+        project1Title: "Système d'Alerte Précoce Climatique",
+        project1Desc: "Systèmes d'alerte précoce communautaires dans les régions sujettes aux catastrophes.",
+        project2Title: "Cartographie des Ressources en Eau",
+        project2Desc: "Évaluations hydrologiques pour une gestion durable de l'eau.",
+        project3Title: "Agriculture Intelligente face au Climat",
+        project3Desc: "Promotion de pratiques agricoles résilientes à travers le Burundi.",
+        researchTitle: "Recherche et Innovation",
+        researchSubtitle: "Recherche de pointe moteur d'innovation technologique et d'excellence scientifique.",
+        research1Title: "Programmes de Recherche Appliquée",
+        research1Desc: "Nos recherches portent sur le changement climatique, les sciences environnementales, l'agriculture intelligente face au climat, la santé et le climat, l'énergie durable, les technologies numériques et l'intelligence artificielle appliquée.",
+        research2Title: "Innovation et Incubation",
+        research2Desc: "Nous promouvons la recherche appliquée, l'innovation technologique, le développement de prototypes, l'incubation de projets innovants, le transfert de technologie et le soutien aux jeunes chercheurs et innovateurs.",
+        partnersTitle: "Partenariats et Coopération",
+        partnersSubtitle: "Partenariats stratégiques avec des institutions nationales, régionales et internationales.",
+        partner1: "Agences des Nations Unies",
+        partner2: "Universités",
+        partner3: "Institutions financières",
+        partner4: "Société civile",
+        footerTagline: "Recherche • Innovation • Intelligence Climatique • Aide à la Décision • Résilience • Développement Durable",
+        footerQuote: "\"Transformer la Science en Action pour un Avenir Résilient et Durable.\"",
+        footerContactTitle: "Contact",
+        footerAddress: "Mukaza-Rohero, Avenue de l'université, Hôtel de ville - Rez de chaussée, Bureau No4",
+        footerLinksTitle: "Liens rapides",
+        footerCopyright: "© 2025 CLIMARES. Tous droits réservés. | Conçu pour l'impact."
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const dict = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
+      // Update document lang attribute
+      document.documentElement.lang = lang;
+      // Update active button
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+    }
+
+    // ===== INITIALIZATION =====
+    (function() {
+      // Init AOS
+      AOS.init({ duration: 800, once: true, offset: 100 });
+
+      // Language switcher
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setLanguage(btn.getAttribute('data-lang'));
+        });
+      });
+
+      // Mobile menu toggle
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenuBtn?.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      });
+
+      // ===== STRATEGIC AREAS FULL-WIDTH CAROUSEL =====
+      const slides = document.querySelectorAll('#strategicCarousel .carousel-slide');
+      const dots = document.querySelectorAll('#carouselDots .carousel-dot');
+      let currentSlide = 0;
+      const totalSlides = slides.length;
+      let autoPlayInterval;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === index);
+        });
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+        currentSlide = index;
+      }
+
+      function nextSlide() {
+        showSlide((currentSlide + 1) % totalSlides);
+      }
+
+      function startAutoPlay() {
+        autoPlayInterval = setInterval(nextSlide, 5000);
+      }
+
+      function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+      }
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          stopAutoPlay();
+          showSlide(index);
+          startAutoPlay();
+        });
+      });
+
+      startAutoPlay();
+
+      const carouselEl = document.getElementById('strategicCarousel');
+      carouselEl.addEventListener('mouseenter', stopAutoPlay);
+      carouselEl.addEventListener('mouseleave', startAutoPlay);
+
+      // Initialize language (English default)
+      setLanguage('en');
+    })();
+  </script>
+</body>
+</html>
