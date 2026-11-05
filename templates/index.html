@@ -4,11 +4,12 @@
   {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token }}">
   <title>CLIMARES · Climate Intelligence & Resilience</title>
   <!-- Tailwind CSS (v3) CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome 6 (free) for modern icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <!-- AOS (Animate On Scroll) -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
@@ -121,11 +122,62 @@
       font-weight: 500;
       line-height: 1.2;
     }
+
+    /* Form styles */
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+      background: white;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #14b8a6;
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .form-label .required {
+      color: #ef4444;
+    }
+
+    /* WhatsApp floating button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      background-color: #25D366;
+      color: white;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+      color: white;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
 
-  <!-- WEBSITE TITLE (institutional name) - NOT in nav or header -->
+  <!-- WEBSITE TITLE (institutional name) -->
   <div class="site-title-banner" data-i18n="siteTitle">
     <i class="fas fa-landmark mr-2"></i>National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development
   </div>
@@ -133,6 +185,8 @@
   <!-- Navigation (sticky) -->
   <nav id="navbar" class="sticky top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 bg-slate-900/95 backdrop-blur-md shadow-lg text-white">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
+      
+      <!-- Logo -->
       <div class="flex items-center gap-2">
         {% load static %}
         <img src="{% static 'logo/climares.png' %}" alt="CLIMARES Logo" class="h-9 w-9 object-contain">
@@ -141,43 +195,61 @@
           <span class="logo-fullform" data-i18n="logoFullForm">CLIMATE RESILIENCE AND RESEARCH</span>
         </div>
       </div>
-      <div class="hidden md:flex space-x-6 text-sm font-medium">
+
+      <!-- Desktop Nav Links -->
+      <div class="hidden lg:flex space-x-5 text-sm font-medium">
         <a href="#about" class="hover:text-teal-300 transition" data-i18n="navAbout">About</a>
         <a href="#strategic-areas" class="hover:text-teal-300 transition" data-i18n="navStrategic">Strategic Areas</a>
         <a href="#approach" class="hover:text-teal-300 transition" data-i18n="navApproach">Approach</a>
-        <a href="#projects" class="hover:text-teal-300 transition" data-i18n="navProjects">Projects</a>
         <a href="#research" class="hover:text-teal-300 transition" data-i18n="navResearch">Research</a>
         <a href="#partnerships" class="hover:text-teal-300 transition" data-i18n="navPartners">Partners</a>
         <a href="#contact" class="hover:text-teal-300 transition" data-i18n="navContact">Contact</a>
       </div>
+
+      <!-- Right side: Lang, CTA Buttons, Mobile Menu -->
       <div class="flex items-center gap-3">
+        
         <!-- Language Switcher -->
-        <div class="flex gap-1 items-center">
+        <div class="flex gap-1 items-center mr-2">
           <button class="lang-btn active" data-lang="en">EN</button>
           <button class="lang-btn" data-lang="fr">FR</button>
         </div>
-        <a href="#contact" class="hidden md:inline-block bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition shadow-lg shadow-teal-600/30">
-          <span data-i18n="navGetInTouch">Get in touch</span> <i class="fas fa-arrow-right ml-1 text-xs"></i>
+
+        <!-- Nav CTA Buttons (Document Requirement) -->
+        <a href="#strategic-areas" class="hidden md:inline-block bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition shadow-lg shadow-teal-600/30">
+          <span data-i18n="heroBtnExplore">Explore our work</span>
         </a>
-        <button id="mobile-menu-btn" class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
+        <a href="#partnerForm" class="hidden md:inline-block border border-teal-500 text-teal-300 hover:bg-teal-500 hover:text-white px-4 py-2 rounded-full text-sm font-semibold transition">
+          <span data-i18n="heroBtnPartner">Become a partner</span>
+        </a>
+
+        <button id="mobile-menu-btn" class="lg:hidden text-2xl ml-2"><i class="fas fa-bars"></i></button>
       </div>
     </div>
+
     <!-- Mobile menu -->
-    <div id="mobile-menu" class="hidden md:hidden mt-4 bg-slate-800/95 backdrop-blur rounded-xl p-5 text-white space-y-4 absolute left-6 right-6 top-20 shadow-2xl">
+    <div id="mobile-menu" class="hidden lg:hidden mt-4 bg-slate-800/95 backdrop-blur rounded-xl p-5 text-white space-y-4 absolute left-6 right-6 top-20 shadow-2xl">
       <a href="#about" class="block hover:text-teal-300" data-i18n="navAbout">About</a>
       <a href="#strategic-areas" class="block hover:text-teal-300" data-i18n="navStrategic">Strategic Areas</a>
       <a href="#approach" class="block hover:text-teal-300" data-i18n="navApproach">Approach</a>
-      <a href="#projects" class="block hover:text-teal-300" data-i18n="navProjects">Projects</a>
       <a href="#research" class="block hover:text-teal-300" data-i18n="navResearch">Research</a>
       <a href="#partnerships" class="block hover:text-teal-300" data-i18n="navPartners">Partners</a>
       <a href="#contact" class="block hover:text-teal-300" data-i18n="navContact">Contact</a>
+      <div class="pt-4 border-t border-slate-700 flex flex-col gap-3">
+        <a href="#strategic-areas" class="bg-teal-600 text-center hover:bg-teal-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition">
+          <span data-i18n="heroBtnExplore">Explore our work</span>
+        </a>
+        <a href="#partnerForm" class="border border-teal-500 text-center text-teal-300 hover:bg-teal-500 hover:text-white px-4 py-2 rounded-full text-sm font-semibold transition">
+          <span data-i18n="heroBtnPartner">Become a partner</span>
+        </a>
+      </div>
     </div>
   </nav>
 
   <!-- HERO SECTION -->
   <header class="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
     <div class="absolute inset-0 bg-climares-gradient opacity-90 z-0" style="background: linear-gradient(135deg, #0b2b3f 0%, #1a5f6e 100%);"></div>
-    <div class="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+    <div class="absolute inset-0 z-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1672575659699-33e02d8a51a5?w=2400&q=85&fm=jpg');"></div>
     <div class="absolute inset-0 z-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 40px 40px;"></div>
 
     <div class="relative z-10 max-w-5xl px-6" data-aos="fade-up">
@@ -185,14 +257,14 @@
         <span data-i18n="heroTitlePart1">Transforming</span> <span class="text-teal-300" data-i18n="heroTitlePart2">Science</span> <span data-i18n="heroTitlePart3">into Action</span>
       </h1>
       <p class="text-xl md:text-2xl font-light mb-8 text-slate-200 max-w-4xl mx-auto" data-i18n="heroSubtitle">
-        National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development
+        Burundi's national centre for climate research, innovation, training, incubation and decision support.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#strategic-areas" class="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition shadow-xl shadow-teal-500/30 flex items-center justify-center gap-2">
           <i class="fas fa-chart-line"></i> <span data-i18n="heroBtnExplore">Explore our work</span>
         </a>
-        <a href="#about" class="border border-white/40 hover:border-white/80 text-white px-8 py-4 rounded-full font-semibold text-lg transition flex items-center justify-center gap-2 backdrop-blur-sm">
-          <i class="fas fa-circle-info"></i> <span data-i18n="heroBtnLearn">Learn more</span>
+        <a href="#partnerForm" class="border border-white/40 hover:border-white/80 text-white px-8 py-4 rounded-full font-semibold text-lg transition flex items-center justify-center gap-2 backdrop-blur-sm">
+          <i class="fas fa-handshake"></i> <span data-i18n="heroBtnPartner">Become a partner</span>
         </a>
       </div>
     </div>
@@ -207,22 +279,44 @@
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div data-aos="fade-right">
           <h2 class="text-4xl font-bold text-slate-800 mb-2 section-title-underline" data-i18n="aboutTitle">About CLIMARES</h2>
-          <p class="text-lg text-slate-600 mt-8 leading-relaxed" data-i18n="aboutText1">
-            CLIMARES is a scientific, technical and technological institution under Burundian law specializing in knowledge production, innovation development, risk analysis and decision support in climate change, environment, hydrometeorology, natural resource management, disaster risk reduction and sustainable development.
-          </p>
-          <p class="text-lg text-slate-600 mt-4 leading-relaxed" data-i18n="aboutText2">
-            Through scientific excellence and data valorization, we support governments, international organizations, universities and the private sector in building climate resilience and evidence-based sustainable development.
-          </p>
-          <div class="mt-8 flex gap-4">
-            <div class="flex items-center gap-3 bg-teal-50 px-4 py-3 rounded-xl">
-              <i class="fas fa-bullseye text-teal-600 text-xl"></i>
-              <span class="font-semibold" data-i18n="aboutVision">Vision: Regional hub of excellence</span>
+          <div class="mt-8 space-y-4">
+            <p class="text-lg text-slate-600 leading-relaxed" data-i18n="aboutText1">
+              CLIMARES brings science closer to the decisions that shape people's lives. We work on climate, water, natural resources, disaster risk and sustainable development, and we turn what we learn into practical tools for the people who need them.
+            </p>
+            <p class="text-lg text-slate-600 leading-relaxed" data-i18n="aboutText2">
+              Our team brings together researchers, engineers, data scientists and trainers. We work alongside governments, international organizations, universities and businesses to understand climate risks, plan for them, and build solutions that fit African realities.
+            </p>
+            <p class="text-lg font-semibold text-slate-800 leading-relaxed" data-i18n="aboutText3">
+              Our belief is simple: good decisions start with good evidence.
+            </p>
+          </div>
+          
+          <div class="mt-10 space-y-6">
+            <div>
+              <h3 class="text-2xl font-bold text-slate-800 mb-2" data-i18n="aboutVisionTitle">Our Vision</h3>
+              <p class="text-slate-600" data-i18n="aboutVisionText">
+                We want to be Burundi's reference centre for climate research, innovation and training, and a trusted partner across the Great Lakes region. We picture societies that are resilient, inventive and able to thrive in a changing climate.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-slate-800 mb-2" data-i18n="aboutMissionTitle">Our Mission</h3>
+              <p class="text-slate-600" data-i18n="aboutMissionText">
+                We produce knowledge, build solutions and train the people who will carry them forward. In practice, we:
+              </p>
+              <ul class="list-disc list-inside mt-2 text-slate-600 space-y-1">
+                <li data-i18n="aboutMissionItem1">Help communities and institutions become more resilient to climate change</li>
+                <li data-i18n="aboutMissionItem2">Support the sustainable use of land, water and natural resources</li>
+                <li data-i18n="aboutMissionItem3">Give policymakers reliable data to work with</li>
+                <li data-i18n="aboutMissionItem4">Build information systems and decision-support tools</li>
+                <li data-i18n="aboutMissionItem5">Encourage innovation and young scientific entrepreneurs</li>
+                <li data-i18n="aboutMissionItem6">Contribute to Burundi's national and international development goals</li>
+              </ul>
             </div>
           </div>
         </div>
         <div class="relative" data-aos="fade-left">
           <div class="rounded-3xl overflow-hidden shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?q=80&w=2070&auto=format&fit=crop" alt="Research and climate" class="w-full h-auto object-cover">
+            <img src="https://images.unsplash.com/photo-1576089275954-40cd98bfcfdb?w=2400&q=85&fm=jpg" alt="Research and climate" class="w-full h-auto object-cover">
           </div>
           <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl hidden md:block border-l-4 border-teal-500">
             <p class="text-sm font-semibold"><i class="fas fa-microscope text-teal-600 mr-2"></i><span data-i18n="aboutBadge">Applied research & innovation</span></p>
@@ -236,94 +330,95 @@
   <section id="strategic-areas" class="py-20 bg-slate-100">
     <div class="max-w-7xl mx-auto px-6 md:px-12 mb-12">
       <div class="text-center" data-aos="fade-up">
-        <h2 class="text-4xl font-bold text-slate-800 inline-block section-title-underline" data-i18n="strategicTitle">Strategic Areas</h2>
-        <p class="text-slate-600 mt-6 max-w-2xl mx-auto text-lg" data-i18n="strategicSubtitle">Our key domains of intervention, driving resilience and sustainable development.</p>
+        <h2 class="text-4xl font-bold text-slate-800 inline-block section-title-underline" data-i18n="strategicTitle">What We Do</h2>
+        <p class="text-slate-600 mt-6 max-w-2xl mx-auto text-lg" data-i18n="strategicSubtitle">Six areas of expertise, one goal: a Burundi better prepared for a changing climate.</p>
       </div>
     </div>
 
     <!-- Full-width carousel -->
     <div class="carousel-fullwidth" id="strategicCarousel">
       <!-- Slide 1: Climate & Climate Services -->
-      <div class="carousel-slide active" style="background-image: url('https://images.unsplash.com/photo-1561484930-998b6a7b22e8?q=80&w=2070&auto=format&fit=crop');">
+      <div class="carousel-slide active" style="background-image: url('https://images.unsplash.com/photo-1773493063756-b821d463daf0?w=2400&q=85&fm=jpg');">
         <div class="carousel-content">
           <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
           <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide1Title">Climate & Climate Services</h3>
-          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide1Desc">Integrated climate services for planning, risk management and resilience of socio-economic systems.</p>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide1Desc">Reliable climate information helps farmers, planners and investors prepare for what's coming.</p>
           <div class="flex flex-wrap gap-3 justify-center text-sm">
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-cloud-sun mr-1 text-teal-300"></i> <span data-i18n="slide1Tag1">Weather & climate forecasts</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-chart-line mr-1 text-teal-300"></i> <span data-i18n="slide1Tag2">Climate variability & extremes</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-file-alt mr-1 text-teal-300"></i> <span data-i18n="slide1Tag3">Adaptation planning</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-coins mr-1 text-teal-300"></i> <span data-i18n="slide1Tag4">Climate finance</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-cloud-sun mr-1 text-teal-300"></i> <span data-i18n="slide1Tag1">Weather and seasonal forecasts</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-chart-line mr-1 text-teal-300"></i> <span data-i18n="slide1Tag2">Climate variability and extreme events</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-file-alt mr-1 text-teal-300"></i> <span data-i18n="slide1Tag3">Climate scenarios</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-shield-alt mr-1 text-teal-300"></i> <span data-i18n="slide1Tag4">Vulnerability assessments</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-coins mr-1 text-teal-300"></i> <span data-i18n="slide1Tag5">Climate finance</span></span>
           </div>
         </div>
       </div>
       <!-- Slide 2: Hydrology & Water Resources -->
-      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2070&auto=format&fit=crop');">
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1680200023508-5289ae3de157?w=2400&q=85&fm=jpg');">
         <div class="carousel-content">
           <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
           <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide2Title">Hydrology & Water Resources</h3>
-          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide2Desc">Scientific and operational solutions for integrated water resource management.</p>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide2Desc">Water sits at the heart of daily life and of Burundi's economy. We help manage it wisely, in times of plenty and in times of scarcity.</p>
           <div class="flex flex-wrap gap-3 justify-center text-sm">
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-water mr-1 text-teal-300"></i> <span data-i18n="slide2Tag1">Hydrological modelling</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-exclamation-triangle mr-1 text-teal-300"></i> <span data-i18n="slide2Tag2">Flood & drought forecasting</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-chart-pie mr-1 text-teal-300"></i> <span data-i18n="slide2Tag3">IWRM</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-satellite-dish mr-1 text-teal-300"></i> <span data-i18n="slide2Tag4">Hydroclimatic monitoring</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-water mr-1 text-teal-300"></i> <span data-i18n="slide2Tag1">Hydrological and hydraulic modelling</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-exclamation-triangle mr-1 text-teal-300"></i> <span data-i18n="slide2Tag2">Flood and drought forecasting</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-chart-pie mr-1 text-teal-300"></i> <span data-i18n="slide2Tag3">Hydroclimatic monitoring</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-satellite-dish mr-1 text-teal-300"></i> <span data-i18n="slide2Tag4">Watershed analysis</span></span>
           </div>
         </div>
       </div>
       <!-- Slide 3: Disaster Risk Reduction -->
-      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070&auto=format&fit=crop');">
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1762624822556-921847c110d9?w=2400&q=85&fm=jpg');">
         <div class="carousel-content">
           <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
           <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide3Title">Disaster Risk Reduction</h3>
-          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide3Desc">Supporting institutions in the identification, assessment and management of climate-related risks.</p>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide3Desc">We help institutions see risks coming and act before disaster strikes.</p>
           <div class="flex flex-wrap gap-3 justify-center text-sm">
             <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-mountain mr-1 text-teal-300"></i> <span data-i18n="slide3Tag1">Multi-hazard assessment</span></span>
             <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-map-marked-alt mr-1 text-teal-300"></i> <span data-i18n="slide3Tag2">Risk mapping</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-clock mr-1 text-teal-300"></i> <span data-i18n="slide3Tag3">Anticipatory action</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-people-arrows mr-1 text-teal-300"></i> <span data-i18n="slide3Tag4">Community risk management</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-clock mr-1 text-teal-300"></i> <span data-i18n="slide3Tag3">Early warning systems</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-people-arrows mr-1 text-teal-300"></i> <span data-i18n="slide3Tag4">Community-based risk management</span></span>
           </div>
         </div>
       </div>
-      <!-- Slide 4: Scientific Research & Development -->
-      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop');">
+      <!-- Slide 4: Scientific Research -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1741874299706-2b8e16839aaa?w=2400&q=85&fm=jpg');">
         <div class="carousel-content">
           <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
-          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide4Title">Scientific Research & Development</h3>
-          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide4Desc">Research forms the basis of CLIMARES' activities, driving innovation and evidence.</p>
+          <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide4Title">Scientific Research</h3>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide4Desc">Research is where everything we do begins. Our programmes cover:</p>
           <div class="flex flex-wrap gap-3 justify-center text-sm">
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-leaf mr-1 text-teal-300"></i> <span data-i18n="slide4Tag1">Climate change & environment</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-leaf mr-1 text-teal-300"></i> <span data-i18n="slide4Tag1">Climate change</span></span>
             <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-seedling mr-1 text-teal-300"></i> <span data-i18n="slide4Tag2">Climate-smart agriculture</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-robot mr-1 text-teal-300"></i> <span data-i18n="slide4Tag3">Applied AI</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-globe mr-1 text-teal-300"></i> <span data-i18n="slide4Tag4">Sustainable energy</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-heartbeat mr-1 text-teal-300"></i> <span data-i18n="slide4Tag3">Health and climate</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-robot mr-1 text-teal-300"></i> <span data-i18n="slide4Tag4">Digital technologies and applied AI</span></span>
           </div>
         </div>
       </div>
-      <!-- Slide 5: Digital Transformation, AI & Data Science -->
-      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop');">
+      <!-- Slide 5: Digital Transformation & AI -->
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1708738793054-32b71e3fc822?w=2400&q=85&fm=jpg');">
         <div class="carousel-content">
           <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
           <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide5Title">Digital Transformation & AI</h3>
-          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide5Desc">Advanced digital solutions for environmental and climate data.</p>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide5Desc">We use modern data tools to make environmental information faster, clearer and easier to act on.</p>
           <div class="flex flex-wrap gap-3 justify-center text-sm">
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-brain mr-1 text-teal-300"></i> <span data-i18n="slide5Tag1">Artificial intelligence</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-brain mr-1 text-teal-300"></i> <span data-i18n="slide5Tag1">Artificial intelligence and machine learning</span></span>
             <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-database mr-1 text-teal-300"></i> <span data-i18n="slide5Tag2">Data science</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-map mr-1 text-teal-300"></i> <span data-i18n="slide5Tag3">GIS & remote sensing</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-cloud mr-1 text-teal-300"></i> <span data-i18n="slide5Tag4">Cloud computing</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-map mr-1 text-teal-300"></i> <span data-i18n="slide5Tag3">Remote sensing and GIS</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-cloud mr-1 text-teal-300"></i> <span data-i18n="slide5Tag4">Cloud computing and platforms</span></span>
           </div>
         </div>
       </div>
       <!-- Slide 6: Training & Capacity Building -->
-      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop');">
+      <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1653566580506-e15e492a7fda?w=2400&q=85&fm=jpg');">
         <div class="carousel-content">
           <span class="inline-block bg-teal-500/20 text-teal-300 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-teal-400/30" data-i18n="slideStrategicAreaLabel">Strategic Area</span>
           <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="slide6Title">Training & Capacity Building</h3>
-          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide6Desc">Developing human capital through professional training and capacity strengthening.</p>
+          <p class="text-lg md:text-xl font-light mb-6 text-slate-200 max-w-2xl mx-auto" data-i18n="slide6Desc">Lasting change depends on skilled people, so we invest in the next generation of experts.</p>
           <div class="flex flex-wrap gap-3 justify-center text-sm">
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-certificate mr-1 text-teal-300"></i> <span data-i18n="slide6Tag1">Professional training</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-users mr-1 text-teal-300"></i> <span data-i18n="slide6Tag2">Institutional capacity</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-graduation-cap mr-1 text-teal-300"></i> <span data-i18n="slide6Tag3">Academic supervision</span></span>
-            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-handshake mr-1 text-teal-300"></i> <span data-i18n="slide6Tag4">Mentoring programs</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-certificate mr-1 text-teal-300"></i> <span data-i18n="slide6Tag1">Certified professional training</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-users mr-1 text-teal-300"></i> <span data-i18n="slide6Tag2">Institutional capacity building</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-graduation-cap mr-1 text-teal-300"></i> <span data-i18n="slide6Tag3">Academic and research supervision</span></span>
+            <span class="bg-white/10 backdrop-blur px-3 py-1 rounded-full"><i class="fas fa-handshake mr-1 text-teal-300"></i> <span data-i18n="slide6Tag4">Technical coaching and mentoring</span></span>
           </div>
         </div>
       </div>
@@ -340,103 +435,279 @@
     </div>
   </section>
 
-  <!-- Institutional Approach (short) -->
+  <!-- Institutional Approach -->
   <section id="approach" class="py-20 px-6 md:px-12 bg-white">
     <div class="max-w-7xl mx-auto">
-      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="approachTitle">Institutional Approach</h2>
-      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="approachSubtitle">Integration of science, innovation and action structured around four strategic axes.</p>
+      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="approachTitle">How We Work</h2>
+      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="approachSubtitle">Science, innovation and action only matter when they are connected. Our work follows four steps that link them together.</p>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up">
           <i class="fas fa-flask text-3xl text-teal-600 mb-4"></i>
-          <h3 class="font-bold text-xl mb-2" data-i18n="approach1Title">Knowledge valorization</h3>
-          <p class="text-slate-600 text-sm" data-i18n="approach1Desc">Collection, processing, analysis & dissemination of scientific data.</p>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach1Title">Turning data into knowledge</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach1Desc">We collect, analyse and share scientific data that people can actually use.</p>
         </div>
         <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up" data-aos-delay="50">
           <i class="fas fa-chart-simple text-3xl text-teal-600 mb-4"></i>
-          <h3 class="font-bold text-xl mb-2" data-i18n="approach2Title">Decision support systems</h3>
-          <p class="text-slate-600 text-sm" data-i18n="approach2Desc">Digital platforms & alert systems transforming data into action.</p>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach2Title">Building decision tools</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach2Desc">We design platforms, dashboards and alert systems that turn information into action.</p>
         </div>
         <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up" data-aos-delay="100">
           <i class="fas fa-building text-3xl text-teal-600 mb-4"></i>
-          <h3 class="font-bold text-xl mb-2" data-i18n="approach3Title">Institutional strengthening</h3>
-          <p class="text-slate-600 text-sm" data-i18n="approach3Desc">Technical, organizational and operational capacity development.</p>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach3Title">Strengthening institutions</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach3Desc">We help our partners build the skills and systems to keep going on their own.</p>
         </div>
         <div class="bg-slate-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100" data-aos="flip-up" data-aos-delay="150">
           <i class="fas fa-hand-holding-heart text-3xl text-teal-600 mb-4"></i>
-          <h3 class="font-bold text-xl mb-2" data-i18n="approach4Title">Resilient policies</h3>
-          <p class="text-slate-600 text-sm" data-i18n="approach4Desc">Analyses and recommendations to integrate climate risks in decisions.</p>
+          <h3 class="font-bold text-xl mb-2" data-i18n="approach4Title">Shaping resilient policies</h3>
+          <p class="text-slate-600 text-sm" data-i18n="approach4Desc">We provide analysis, scenarios and recommendations so that climate risk is part of every major decision.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Projects Section -->
-  <section id="projects" class="py-20 px-6 md:px-12 bg-slate-50">
+  <!-- Research, Innovation & Incubation Section -->
+  <section id="research" class="py-20 px-6 md:px-12 bg-slate-50">
     <div class="max-w-7xl mx-auto">
-      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="projectsTitle">Projects</h2>
-      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="projectsSubtitle">Explore our portfolio of climate resilience and sustainable development projects.</p>
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2070&auto=format&fit=crop" alt="Project" class="h-40 w-full object-cover">
-          <div class="p-5">
-            <h3 class="font-bold text-lg" data-i18n="project1Title">Climate Early Warning System</h3>
-            <p class="text-slate-600 text-sm mt-2" data-i18n="project1Desc">Community-based early warning systems in disaster-prone regions.</p>
-          </div>
+      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="researchTitle">Innovation & Incubation</h2>
+      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="researchSubtitle">Good ideas deserve a chance to grow. Through our innovation and incubation programme, we help students, young graduates, researchers and entrepreneurs turn their ideas into real projects.</p>
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="bg-white p-8 rounded-3xl shadow-sm">
+          <h3 class="font-bold text-2xl mb-4" data-i18n="research1Title">What we offer:</h3>
+          <ul class="space-y-3 text-slate-600">
+            <li class="flex items-start gap-3"><i class="fas fa-check-circle text-teal-600 mt-1"></i> <span data-i18n="research1Item1">Space and support to develop technologies and prototypes</span></li>
+            <li class="flex items-start gap-3"><i class="fas fa-check-circle text-teal-600 mt-1"></i> <span data-i18n="research1Item2">Incubation and acceleration of promising projects</span></li>
+            <li class="flex items-start gap-3"><i class="fas fa-check-circle text-teal-600 mt-1"></i> <span data-i18n="research1Item3">Mentoring from experienced scientists and professionals</span></li>
+            <li class="flex items-start gap-3"><i class="fas fa-check-circle text-teal-600 mt-1"></i> <span data-i18n="research1Item4">Help with internships, theses and applied research projects</span></li>
+            <li class="flex items-start gap-3"><i class="fas fa-check-circle text-teal-600 mt-1"></i> <span data-i18n="research1Item5">Technology transfer and support for scientific entrepreneurship</span></li>
+          </ul>
+          <p class="mt-6 text-slate-700 font-medium" data-i18n="research1Footer">
+            Our aim is to turn research into solutions that work on the ground, in Burundi and across the region.
+          </p>
         </div>
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=2070&auto=format&fit=crop" alt="Project" class="h-40 w-full object-cover">
-          <div class="p-5">
-            <h3 class="font-bold text-lg" data-i18n="project2Title">Water Resource Mapping</h3>
-            <p class="text-slate-600 text-sm mt-2" data-i18n="project2Desc">Hydrological assessments for sustainable water management.</p>
-          </div>
-        </div>
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=2070&auto=format&fit=crop" alt="Project" class="h-40 w-full object-cover">
-          <div class="p-5">
-            <h3 class="font-bold text-lg" data-i18n="project3Title">Climate-Smart Agriculture</h3>
-            <p class="text-slate-600 text-sm mt-2" data-i18n="project3Desc">Promoting resilient farming practices across Burundi.</p>
-          </div>
+        <div class="rounded-3xl overflow-hidden shadow-2xl">
+          <img src="https://images.unsplash.com/photo-1655720357872-ce227e4164ba?w=2400&q=85&fm=jpg" alt="Incubation and innovation" class="w-full h-auto object-cover">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Research Section -->
-  <section id="research" class="py-20 px-6 md:px-12 bg-white">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="researchTitle">Research & Innovation</h2>
-      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="researchSubtitle">Cutting-edge research driving technological innovation and scientific excellence.</p>
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="bg-slate-50 p-8 rounded-3xl">
-          <i class="fas fa-microscope text-4xl text-teal-600 mb-4"></i>
-          <h3 class="font-bold text-2xl mb-3" data-i18n="research1Title">Applied Research Programs</h3>
-          <p class="text-slate-600" data-i18n="research1Desc">Our research focuses on climate change, environmental sciences, climate-smart agriculture, health and climate, sustainable energy, digital technologies, and applied artificial intelligence.</p>
-        </div>
-        <div class="bg-slate-50 p-8 rounded-3xl">
-          <i class="fas fa-lightbulb text-4xl text-teal-600 mb-4"></i>
-          <h3 class="font-bold text-2xl mb-3" data-i18n="research2Title">Innovation & Incubation</h3>
-          <p class="text-slate-600" data-i18n="research2Desc">We promote applied research, technological innovation, prototype development, incubation of innovative projects, technology transfer, and support for young researchers and innovators.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Partnerships -->
+  <!-- Partnerships (B1 + B2) -->
   <section id="partnerships" class="py-20 px-6 md:px-12 bg-slate-800 text-white">
     <div class="max-w-7xl mx-auto">
       <h2 class="text-4xl font-bold text-center mb-4 text-white section-title-underline" data-i18n="partnersTitle">Partnerships & Cooperation</h2>
-      <p class="text-center text-slate-300 max-w-3xl mx-auto mb-12" data-i18n="partnersSubtitle">Strategic partnerships with national, regional and international institutions.</p>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-        <div class="p-4"><i class="fas fa-globe-americas text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner1">UN Agencies</p></div>
-        <div class="p-4"><i class="fas fa-university text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner2">Universities</p></div>
-        <div class="p-4"><i class="fas fa-chart-line text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner3">Financial Inst.</p></div>
-        <div class="p-4"><i class="fas fa-users text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner4">Civil Society</p></div>
+      <p class="text-center text-slate-300 max-w-3xl mx-auto mb-12" data-i18n="partnersSubtitle">We can't do this alone. We work with partners who share our commitment to a resilient future, including:</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-16">
+        <div class="p-4"><i class="fas fa-globe-americas text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner1">United Nations agencies</p></div>
+        <div class="p-4"><i class="fas fa-university text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner2">Universities and research centres</p></div>
+        <div class="p-4"><i class="fas fa-chart-line text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner3">Financial institutions</p></div>
+        <div class="p-4"><i class="fas fa-users text-4xl text-teal-300 mb-3"></i><p class="font-semibold" data-i18n="partner4">NGOs and civil society</p></div>
+      </div>
+
+      <p class="text-center text-slate-300 mb-6" data-i18n="partnersFooterText">Together, we share knowledge, innovate and deliver projects with real impact. Interested in working with us? We'd love to hear from you.</p>
+
+      <!-- B1: Become a partner form -->
+      <div id="partnerForm" class="bg-white text-slate-800 rounded-3xl shadow-2xl p-8 md:p-10 max-w-3xl mx-auto scroll-mt-24">
+        <h3 class="text-2xl font-bold mb-6" data-i18n="partnerFormTitle">Become a partner</h3>
+        <form id="becomePartnerForm" class="space-y-4">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label" data-i18n="partnerFirstName">First name <span class="required">*</span></label>
+              <input type="text" name="first_name" required class="form-input" placeholder="First name">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="partnerLastName">Last name <span class="required">*</span></label>
+              <input type="text" name="last_name" required class="form-input" placeholder="Last name">
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label" data-i18n="partnerOrg">Organization</label>
+              <input type="text" name="organization" class="form-input" placeholder="Organization">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="partnerPosition">Position</label>
+              <input type="text" name="position" class="form-input" placeholder="Position">
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label" data-i18n="partnerEmail">Email <span class="required">*</span></label>
+              <input type="email" name="email" required class="form-input" placeholder="you@example.com">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="partnerPhone">Phone / WhatsApp</label>
+              <input type="tel" name="phone" class="form-input" placeholder="+257 ...">
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label" data-i18n="partnerCountry">Country</label>
+              <input type="text" name="country" class="form-input" placeholder="Country">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="partnerType">Partner type</label>
+              <select name="partner_type" class="form-input">
+                <option value="" data-i18n="partnerTypeSelect">Select...</option>
+                <option value="un" data-i18n="partnerTypeUN">UN agency</option>
+                <option value="university" data-i18n="partnerTypeUniversity">University</option>
+                <option value="financial" data-i18n="partnerTypeFinancial">Financial institution</option>
+                <option value="ngo" data-i18n="partnerTypeNGO">NGO / Civil society</option>
+                <option value="gov" data-i18n="partnerTypeGov">Government</option>
+                <option value="private" data-i18n="partnerTypePrivate">Private sector</option>
+                <option value="other" data-i18n="partnerTypeOther">Individual / other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Area of partnership (B2 - triggers dynamic text) -->
+          <div>
+            <label class="form-label" data-i18n="partnerAreaLabel">Area of partnership <span class="required">*</span></label>
+            <select name="partnership_area" id="partnershipArea" required class="form-input">
+              <option value="" data-i18n="partnerAreaSelect">Select an area</option>
+              <option value="research" data-i18n="areaResearch">Research & Studies</option>
+              <option value="innovation" data-i18n="areaInnovation">Innovation & Incubation</option>
+              <option value="hydrology" data-i18n="areaHydrology">Hydrology & Water Resources</option>
+              <option value="climate" data-i18n="areaClimate">Climate & Climate Services</option>
+              <option value="drr" data-i18n="areaDRR">Disaster Risk Reduction</option>
+              <option value="digital" data-i18n="areaDigital">Digital Transformation & AI</option>
+              <option value="training" data-i18n="areaTraining">Training & Capacity Building</option>
+              <option value="funding" data-i18n="areaFunding">Project Funding / Sponsorship</option>
+              <option value="other" data-i18n="areaOther">Other</option>
+            </select>
+          </div>
+
+          <!-- B2: Dynamic explanatory box -->
+          <div id="partnershipAreaInfo" class="hidden bg-teal-50 border-l-4 border-teal-500 p-4 rounded-r-lg text-sm text-slate-700 leading-relaxed"></div>
+
+          <div>
+            <label class="form-label" data-i18n="partnerMessage">Message <span class="required">*</span></label>
+            <textarea name="message" rows="4" required minlength="500" class="form-input" placeholder="Tell us how you'd like to work together (min. 500 characters)..."></textarea>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <input type="checkbox" name="consent" required id="consent" class="mt-1 accent-teal-600">
+            <label for="consent" class="text-sm text-slate-600" data-i18n="partnerConsent">
+              I agree that my data will be used to process my request. <a href="#" class="text-teal-600 underline">Privacy policy</a>
+            </label>
+          </div>
+
+          <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg shadow-teal-600/30" data-i18n="partnerSubmit">Submit request</button>
+        </form>
+        <div id="partnerFormSuccess" class="hidden mt-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg text-sm" data-i18n="partnerSuccessMsg">
+          Thank you! Your partnership request has been received. Our team will contact you within 5 working days.
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Contact / Address footer -->
-  <footer id="contact" class="bg-slate-900 text-slate-300 pt-16 pb-8 px-6 md:px-12">
+  <!-- Our Ambition -->
+  <section class="py-20 px-6 md:px-12 bg-white">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl font-bold text-slate-800 mb-6 section-title-underline inline-block" data-i18n="ambitionTitle">Our Ambition</h2>
+      <p class="text-xl text-slate-600 leading-relaxed mt-8" data-i18n="ambitionText">
+        Climate and environmental risks are growing. We believe science, data and technology can help Burundi meet them, and we intend to play our part, for today's communities and for the generations to come.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Section (B3) -->
+  <section id="contact" class="py-20 px-6 md:px-12 bg-slate-100">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-slate-800 text-center mb-4 section-title-underline" data-i18n="contactTitle">Contact Us</h2>
+      <p class="text-center text-slate-600 max-w-3xl mx-auto mb-12" data-i18n="contactSubtitle">Have a question or want to work with us? Send us a message or reach out directly.</p>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        <!-- Left: Contact form -->
+        <div class="bg-white p-8 rounded-3xl shadow-lg">
+          <form id="contactForm" class="space-y-4">
+            <div>
+              <label class="form-label" data-i18n="contactFormName">Full name <span class="required">*</span></label>
+              <input type="text" name="full_name" required class="form-input" placeholder="Your full name">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="contactFormEmail">Email <span class="required">*</span></label>
+              <input type="email" name="email" required class="form-input" placeholder="you@example.com">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="contactFormPhone">Phone</label>
+              <input type="tel" name="phone" class="form-input" placeholder="+257 ...">
+            </div>
+            <div>
+              <label class="form-label" data-i18n="contactFormSubject">Subject <span class="required">*</span></label>
+              <select name="subject" required class="form-input">
+                <option value="" data-i18n="contactFormSubjectOption">Select a subject</option>
+                <option value="general" data-i18n="contactFormSubjectGeneral">General information</option>
+                <option value="partnership" data-i18n="contactFormSubjectPartnership">Partnership</option>
+                <option value="training" data-i18n="contactFormSubjectTraining">Training</option>
+                <option value="incubation" data-i18n="contactFormSubjectIncubation">Incubation</option>
+                <option value="press" data-i18n="contactFormSubjectPress">Press</option>
+                <option value="other" data-i18n="contactFormSubjectOther">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" data-i18n="contactFormMessage">Message <span class="required">*</span></label>
+              <textarea name="message" rows="5" required class="form-input" placeholder="Your message..."></textarea>
+            </div>
+            <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg shadow-teal-600/30" data-i18n="contactFormSend">Send message</button>
+          </form>
+        </div>
+
+        <!-- Right: Coordinates & socials -->
+        <div class="space-y-8">
+          <div class="bg-white p-8 rounded-3xl shadow-lg">
+            <h3 class="text-2xl font-bold text-slate-800 mb-6" data-i18n="contactInfoTitle">Contact Information</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-map-pin text-teal-600"></i></div>
+                <div>
+                  <p class="font-semibold text-slate-800" data-i18n="contactInfoAddressLabel">Address</p>
+                  <p class="text-slate-600 text-sm" data-i18n="footerAddress">Mukaza-Rohero, Avenue de l'Université, Hôtel de Ville, rez-de-chaussée, Bureau No 4, Bujumbura, Burundi</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-envelope text-teal-600"></i></div>
+                <div>
+                  <p class="font-semibold text-slate-800" data-i18n="contactInfoEmailLabel">Email</p>
+                  <a href="mailto:infos@climares.com" class="text-teal-600 hover:underline">infos@climares.com</a>
+                </div>
+              </li>
+              <li class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-phone text-teal-600"></i></div>
+                <div>
+                  <p class="font-semibold text-slate-800" data-i18n="contactInfoPhoneLabel">Phone</p>
+                  <a href="tel:+25761338212" class="text-slate-600 hover:text-teal-600 block">+257 61 33 82 12</a>
+                  <a href="tel:+251938199588" class="text-slate-600 hover:text-teal-600 block">+251 93 81 99 588</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-white p-8 rounded-3xl shadow-lg">
+            <h3 class="text-2xl font-bold text-slate-800 mb-4" data-i18n="contactSocialTitle">Follow Us</h3>
+            <div class="flex gap-4">
+              <a href="https://www.linkedin.com/in/climares-institute/" target="_blank" class="w-12 h-12 bg-slate-100 hover:bg-teal-100 rounded-full flex items-center justify-center text-slate-600 hover:text-teal-600 transition text-xl"><i class="fab fa-linkedin-in"></i></a>
+              <a href="https://www.facebook.com/ClimaresInstitute/" target="_blank" class="w-12 h-12 bg-slate-100 hover:bg-teal-100 rounded-full flex items-center justify-center text-slate-600 hover:text-teal-600 transition text-xl"><i class="fab fa-facebook-f"></i></a>
+              <!-- Fixed X Icon -->
+              <a href="https://x.com/CLIMARES_bi" target="_blank" class="w-12 h-12 bg-slate-100 hover:bg-teal-100 rounded-full flex items-center justify-center text-slate-600 hover:text-teal-600 transition text-xl"><i class="fa-brands fa-x-twitter"></i></a>
+              <a href="https://www.youtube.com/@climaresinstitute" target="_blank" class="w-12 h-12 bg-slate-100 hover:bg-teal-100 rounded-full flex items-center justify-center text-slate-600 hover:text-teal-600 transition text-xl"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div class="mt-6">
+              <a href="https://wa.me/251938199588" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20b859] text-white px-5 py-3 rounded-full font-semibold transition shadow-lg">
+                <i class="fab fa-whatsapp text-xl"></i> <span data-i18n="contactWhatsAppBtn">Write to us on WhatsApp</span>
+              </a>
+            </div>
+            <div class="mt-6 rounded-xl overflow-hidden">
+              <iframe src="https://www.google.com/maps?q=Bujumbura+Burundi&output=embed" width="100%" height="220" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="footer" class="bg-slate-900 text-slate-300 pt-16 pb-8 px-6 md:px-12">
     <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
       <div>
         <div class="flex items-center gap-2 text-white mb-4">
@@ -444,15 +715,15 @@
           <span class="font-bold text-2xl">CLIMARES<span class="text-teal-400">.</span></span>
         </div>
         <p class="text-sm leading-relaxed" data-i18n="footerTagline">Research • Innovation • Climate Intelligence • Decision Support • Resilience • Sustainable Development</p>
-        <p class="mt-4 text-sm italic text-teal-300/80" data-i18n="footerQuote">"Transforming Science into Action for a Resilient and Sustainable Future."</p>
+        <p class="mt-4 text-sm italic text-teal-300/80" data-i18n="footerQuote">"Transforming science into action for a resilient and sustainable future."</p>
       </div>
       <div>
         <h4 class="text-white font-bold text-lg mb-4" data-i18n="footerContactTitle">Contact</h4>
         <ul class="space-y-3 text-sm">
-          <li class="flex items-start gap-3"><i class="fas fa-map-pin text-teal-400 mt-1"></i> <span data-i18n="footerAddress">Mukaza-Rohero, Avenue de l'université, Hôtel de ville - Rez de chaussée, Bureau No4</span></li>
-          <li class="flex items-start gap-3"><i class="fas fa-envelope text-teal-400 mt-1"></i> infos@climares.com</li>
-          <li class="flex items-start gap-3"><i class="fas fa-phone text-teal-400 mt-1"></i> +257 61 33 82 12</li>
-          <li class="flex items-start gap-3"><i class="fas fa-phone text-teal-400 mt-1"></i> +251 93 81 99 588</li>
+          <li class="flex items-start gap-3"><i class="fas fa-map-pin text-teal-400 mt-1"></i> <span data-i18n="footerAddress">Mukaza-Rohero, Avenue de l'Université, Hôtel de Ville, rez-de-chaussée, Bureau No 4, Bujumbura, Burundi</span></li>
+          <li class="flex items-start gap-3"><i class="fas fa-envelope text-teal-400 mt-1"></i> <a href="mailto:infos@climares.com" class="hover:text-teal-400">infos@climares.com</a></li>
+          <li class="flex items-start gap-3"><i class="fas fa-phone text-teal-400 mt-1"></i> <a href="tel:+25761338212" class="hover:text-teal-400">+257 61 33 82 12</a></li>
+          <li class="flex items-start gap-3"><i class="fas fa-phone text-teal-400 mt-1"></i> <a href="tel:+251938199588" class="hover:text-teal-400">+251 93 81 99 588</a></li>
         </ul>
       </div>
       <div>
@@ -461,16 +732,21 @@
           <li><a href="#about" class="hover:text-teal-400" data-i18n="navAbout">About</a></li>
           <li><a href="#strategic-areas" class="hover:text-teal-400" data-i18n="navStrategic">Strategic Areas</a></li>
           <li><a href="#approach" class="hover:text-teal-400" data-i18n="navApproach">Approach</a></li>
-          <li><a href="#projects" class="hover:text-teal-400" data-i18n="navProjects">Projects</a></li>
           <li><a href="#research" class="hover:text-teal-400" data-i18n="navResearch">Research</a></li>
           <li><a href="#partnerships" class="hover:text-teal-400" data-i18n="navPartners">Partners</a></li>
+          <li><a href="#contact" class="hover:text-teal-400" data-i18n="navContact">Contact</a></li>
         </ul>
       </div>
     </div>
     <div class="border-t border-slate-800 mt-12 pt-6 text-center text-xs text-slate-500">
-      <span data-i18n="footerCopyright">© 2025 CLIMARES. All rights reserved. | Designed for impact.</span>
+      <span data-i18n="footerCopyright">© 2026 CLIMARES. All rights reserved. | Designed for impact.</span>
     </div>
   </footer>
+
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/251938199588" target="_blank" class="whatsapp-float" title="Chat with us on WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
 
   <!-- JavaScript -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -483,7 +759,6 @@
         navAbout: "About",
         navStrategic: "Strategic Areas",
         navApproach: "Approach",
-        navProjects: "Projects",
         navResearch: "Research",
         navPartners: "Partners",
         navContact: "Contact",
@@ -491,89 +766,151 @@
         heroTitlePart1: "Transforming",
         heroTitlePart2: "Science",
         heroTitlePart3: "into Action",
-        heroSubtitle: "National Centre for Research, Innovation, Training and Decision Support for Climate, Environment and Sustainable Development",
+        heroSubtitle: "Burundi's national centre for climate research, innovation, training, incubation and decision support.",
         heroBtnExplore: "Explore our work",
-        heroBtnLearn: "Learn more",
+        heroBtnPartner: "Become a partner",
         aboutTitle: "About CLIMARES",
-        aboutText1: "CLIMARES is a scientific, technical and technological institution under Burundian law specializing in knowledge production, innovation development, risk analysis and decision support in climate change, environment, hydrometeorology, natural resource management, disaster risk reduction and sustainable development.",
-        aboutText2: "Through scientific excellence and data valorization, we support governments, international organizations, universities and the private sector in building climate resilience and evidence-based sustainable development.",
-        aboutVision: "Vision: Regional hub of excellence",
+        aboutText1: "CLIMARES brings science closer to the decisions that shape people's lives. We work on climate, water, natural resources, disaster risk and sustainable development, and we turn what we learn into practical tools for the people who need them.",
+        aboutText2: "Our team brings together researchers, engineers, data scientists and trainers. We work alongside governments, international organizations, universities and businesses to understand climate risks, plan for them, and build solutions that fit African realities.",
+        aboutText3: "Our belief is simple: good decisions start with good evidence.",
+        aboutVisionTitle: "Our Vision",
+        aboutVisionText: "We want to be Burundi's reference centre for climate research, innovation and training, and a trusted partner across the Great Lakes region. We picture societies that are resilient, inventive and able to thrive in a changing climate.",
+        aboutMissionTitle: "Our Mission",
+        aboutMissionText: "We produce knowledge, build solutions and train the people who will carry them forward. In practice, we:",
+        aboutMissionItem1: "Help communities and institutions become more resilient to climate change",
+        aboutMissionItem2: "Support the sustainable use of land, water and natural resources",
+        aboutMissionItem3: "Give policymakers reliable data to work with",
+        aboutMissionItem4: "Build information systems and decision-support tools",
+        aboutMissionItem5: "Encourage innovation and young scientific entrepreneurs",
+        aboutMissionItem6: "Contribute to Burundi's national and international development goals",
         aboutBadge: "Applied research & innovation",
-        strategicTitle: "Strategic Areas",
-        strategicSubtitle: "Our key domains of intervention, driving resilience and sustainable development.",
+        strategicTitle: "What We Do",
+        strategicSubtitle: "Six areas of expertise, one goal: a Burundi better prepared for a changing climate.",
         slideStrategicAreaLabel: "Strategic Area",
         slide1Title: "Climate & Climate Services",
-        slide1Desc: "Integrated climate services for planning, risk management and resilience of socio-economic systems.",
-        slide1Tag1: "Weather & climate forecasts",
-        slide1Tag2: "Climate variability & extremes",
-        slide1Tag3: "Adaptation planning",
-        slide1Tag4: "Climate finance",
+        slide1Desc: "Reliable climate information helps farmers, planners and investors prepare for what's coming.",
+        slide1Tag1: "Weather and seasonal forecasts",
+        slide1Tag2: "Climate variability and extreme events",
+        slide1Tag3: "Climate scenarios",
+        slide1Tag4: "Vulnerability assessments",
+        slide1Tag5: "Climate finance",
         slide2Title: "Hydrology & Water Resources",
-        slide2Desc: "Scientific and operational solutions for integrated water resource management.",
-        slide2Tag1: "Hydrological modelling",
-        slide2Tag2: "Flood & drought forecasting",
-        slide2Tag3: "IWRM",
-        slide2Tag4: "Hydroclimatic monitoring",
+        slide2Desc: "Water sits at the heart of daily life and of Burundi's economy. We help manage it wisely, in times of plenty and in times of scarcity.",
+        slide2Tag1: "Hydrological and hydraulic modelling",
+        slide2Tag2: "Flood and drought forecasting",
+        slide2Tag3: "Hydroclimatic monitoring",
+        slide2Tag4: "Watershed analysis",
         slide3Title: "Disaster Risk Reduction",
-        slide3Desc: "Supporting institutions in the identification, assessment and management of climate-related risks.",
+        slide3Desc: "We help institutions see risks coming and act before disaster strikes.",
         slide3Tag1: "Multi-hazard assessment",
         slide3Tag2: "Risk mapping",
-        slide3Tag3: "Anticipatory action",
-        slide3Tag4: "Community risk management",
-        slide4Title: "Scientific Research & Development",
-        slide4Desc: "Research forms the basis of CLIMARES' activities, driving innovation and evidence.",
-        slide4Tag1: "Climate change & environment",
+        slide3Tag3: "Early warning systems",
+        slide3Tag4: "Community-based risk management",
+        slide4Title: "Scientific Research",
+        slide4Desc: "Research is where everything we do begins. Our programmes cover:",
+        slide4Tag1: "Climate change",
         slide4Tag2: "Climate-smart agriculture",
-        slide4Tag3: "Applied AI",
-        slide4Tag4: "Sustainable energy",
+        slide4Tag3: "Health and climate",
+        slide4Tag4: "Digital technologies and applied AI",
         slide5Title: "Digital Transformation & AI",
-        slide5Desc: "Advanced digital solutions for environmental and climate data.",
-        slide5Tag1: "Artificial intelligence",
+        slide5Desc: "We use modern data tools to make environmental information faster, clearer and easier to act on.",
+        slide5Tag1: "Artificial intelligence and machine learning",
         slide5Tag2: "Data science",
-        slide5Tag3: "GIS & remote sensing",
-        slide5Tag4: "Cloud computing",
+        slide5Tag3: "Remote sensing and GIS",
+        slide5Tag4: "Cloud computing and platforms",
         slide6Title: "Training & Capacity Building",
-        slide6Desc: "Developing human capital through professional training and capacity strengthening.",
-        slide6Tag1: "Professional training",
-        slide6Tag2: "Institutional capacity",
-        slide6Tag3: "Academic supervision",
-        slide6Tag4: "Mentoring programs",
-        approachTitle: "Institutional Approach",
-        approachSubtitle: "Integration of science, innovation and action structured around four strategic axes.",
-        approach1Title: "Knowledge valorization",
-        approach1Desc: "Collection, processing, analysis & dissemination of scientific data.",
-        approach2Title: "Decision support systems",
-        approach2Desc: "Digital platforms & alert systems transforming data into action.",
-        approach3Title: "Institutional strengthening",
-        approach3Desc: "Technical, organizational and operational capacity development.",
-        approach4Title: "Resilient policies",
-        approach4Desc: "Analyses and recommendations to integrate climate risks in decisions.",
-        projectsTitle: "Projects",
-        projectsSubtitle: "Explore our portfolio of climate resilience and sustainable development projects.",
-        project1Title: "Climate Early Warning System",
-        project1Desc: "Community-based early warning systems in disaster-prone regions.",
-        project2Title: "Water Resource Mapping",
-        project2Desc: "Hydrological assessments for sustainable water management.",
-        project3Title: "Climate-Smart Agriculture",
-        project3Desc: "Promoting resilient farming practices across Burundi.",
-        researchTitle: "Research & Innovation",
-        researchSubtitle: "Cutting-edge research driving technological innovation and scientific excellence.",
-        research1Title: "Applied Research Programs",
-        research1Desc: "Our research focuses on climate change, environmental sciences, climate-smart agriculture, health and climate, sustainable energy, digital technologies, and applied artificial intelligence.",
-        research2Title: "Innovation & Incubation",
-        research2Desc: "We promote applied research, technological innovation, prototype development, incubation of innovative projects, technology transfer, and support for young researchers and innovators.",
+        slide6Desc: "Lasting change depends on skilled people, so we invest in the next generation of experts.",
+        slide6Tag1: "Certified professional training",
+        slide6Tag2: "Institutional capacity building",
+        slide6Tag3: "Academic and research supervision",
+        slide6Tag4: "Technical coaching and mentoring",
+        approachTitle: "How We Work",
+        approachSubtitle: "Science, innovation and action only matter when they are connected. Our work follows four steps that link them together.",
+        approach1Title: "Turning data into knowledge",
+        approach1Desc: "We collect, analyse and share scientific data that people can actually use.",
+        approach2Title: "Building decision tools",
+        approach2Desc: "We design platforms, dashboards and alert systems that turn information into action.",
+        approach3Title: "Strengthening institutions",
+        approach3Desc: "We help our partners build the skills and systems to keep going on their own.",
+        approach4Title: "Shaping resilient policies",
+        approach4Desc: "We provide analysis, scenarios and recommendations so that climate risk is part of every major decision.",
+        researchTitle: "Innovation & Incubation",
+        researchSubtitle: "Good ideas deserve a chance to grow. Through our innovation and incubation programme, we help students, young graduates, researchers and entrepreneurs turn their ideas into real projects.",
+        research1Title: "What we offer:",
+        research1Item1: "Space and support to develop technologies and prototypes",
+        research1Item2: "Incubation and acceleration of promising projects",
+        research1Item3: "Mentoring from experienced scientists and professionals",
+        research1Item4: "Help with internships, theses and applied research projects",
+        research1Item5: "Technology transfer and support for scientific entrepreneurship",
+        research1Footer: "Our aim is to turn research into solutions that work on the ground, in Burundi and across the region.",
         partnersTitle: "Partnerships & Cooperation",
-        partnersSubtitle: "Strategic partnerships with national, regional and international institutions.",
-        partner1: "UN Agencies",
-        partner2: "Universities",
-        partner3: "Financial Inst.",
-        partner4: "Civil Society",
+        partnersSubtitle: "We can't do this alone. We work with partners who share our commitment to a resilient future, including:",
+        partner1: "United Nations agencies",
+        partner2: "Universities and research centres",
+        partner3: "Financial institutions",
+        partner4: "NGOs and civil society",
+        partnersFooterText: "Together, we share knowledge, innovate and deliver projects with real impact. Interested in working with us? We'd love to hear from you.",
+        partnerFormTitle: "Become a partner",
+        partnerFirstName: "First name",
+        partnerLastName: "Last name",
+        partnerOrg: "Organization",
+        partnerPosition: "Position",
+        partnerEmail: "Email",
+        partnerPhone: "Phone / WhatsApp",
+        partnerCountry: "Country",
+        partnerType: "Partner type",
+        partnerTypeSelect: "Select...",
+        partnerTypeUN: "UN agency",
+        partnerTypeUniversity: "University",
+        partnerTypeFinancial: "Financial institution",
+        partnerTypeNGO: "NGO / Civil society",
+        partnerTypeGov: "Government",
+        partnerTypePrivate: "Private sector",
+        partnerTypeOther: "Individual / other",
+        partnerAreaLabel: "Area of partnership",
+        partnerAreaSelect: "Select an area",
+        areaResearch: "Research & Studies",
+        areaInnovation: "Innovation & Incubation",
+        areaHydrology: "Hydrology & Water Resources",
+        areaClimate: "Climate & Climate Services",
+        areaDRR: "Disaster Risk Reduction",
+        areaDigital: "Digital Transformation & AI",
+        areaTraining: "Training & Capacity Building",
+        areaFunding: "Project Funding / Sponsorship",
+        areaOther: "Other",
+        partnerMessage: "Message",
+        partnerConsent: "I agree that my data will be used to process my request. Privacy policy",
+        partnerSubmit: "Submit request",
+        partnerSuccessMsg: "Thank you! Your partnership request has been received. Our team will contact you within 5 working days.",
+        ambitionTitle: "Our Ambition",
+        ambitionText: "Climate and environmental risks are growing. We believe science, data and technology can help Burundi meet them, and we intend to play our part, for today's communities and for the generations to come.",
+        contactTitle: "Contact Us",
+        contactSubtitle: "Have a question or want to work with us? Send us a message or reach out directly.",
+        contactFormName: "Full name",
+        contactFormEmail: "Email",
+        contactFormPhone: "Phone",
+        contactFormSubject: "Subject",
+        contactFormSubjectOption: "Select a subject",
+        contactFormSubjectGeneral: "General information",
+        contactFormSubjectPartnership: "Partnership",
+        contactFormSubjectTraining: "Training",
+        contactFormSubjectIncubation: "Incubation",
+        contactFormSubjectPress: "Press",
+        contactFormSubjectOther: "Other",
+        contactFormMessage: "Message",
+        contactFormSend: "Send message",
+        contactInfoTitle: "Contact Information",
+        contactInfoAddressLabel: "Address",
+        contactInfoEmailLabel: "Email",
+        contactInfoPhoneLabel: "Phone",
+        contactSocialTitle: "Follow Us",
+        contactWhatsAppBtn: "Write to us on WhatsApp",
         footerTagline: "Research • Innovation • Climate Intelligence • Decision Support • Resilience • Sustainable Development",
-        footerQuote: "\"Transforming Science into Action for a Resilient and Sustainable Future.\"",
+        footerQuote: "\"Transforming science into action for a resilient and sustainable future.\"",
         footerContactTitle: "Contact",
-        footerAddress: "Mukaza-Rohero, Avenue de l'université, Hôtel de ville - Rez de chaussée, Bureau No4",
+        footerAddress: "Mukaza-Rohero, Avenue de l'Université, Hôtel de Ville, rez-de-chaussée, Bureau No 4, Bujumbura, Burundi",
         footerLinksTitle: "Quick Links",
-        footerCopyright: "© 2025 CLIMARES. All rights reserved. | Designed for impact."
+        footerCopyright: "© 2026 CLIMARES. All rights reserved. | Designed for impact."
       },
       fr: {
         siteTitle: "Centre National de Recherche, d'Innovation, de Formation et d'Aide à la Décision pour le Climat, l'Environnement et le Développement Durable",
@@ -581,7 +918,6 @@
         navAbout: "À propos",
         navStrategic: "Domaines stratégiques",
         navApproach: "Approche",
-        navProjects: "Projets",
         navResearch: "Recherche",
         navPartners: "Partenaires",
         navContact: "Contact",
@@ -589,89 +925,151 @@
         heroTitlePart1: "Transformer",
         heroTitlePart2: "la Science",
         heroTitlePart3: "en Action",
-        heroSubtitle: "Centre National de Recherche, d'Innovation, de Formation et d'Aide à la Décision pour le Climat, l'Environnement et le Développement Durable",
+        heroSubtitle: "Le centre national burundais pour la recherche climatique, l'innovation, la formation, l'incubation et l'aide à la décision.",
         heroBtnExplore: "Découvrir nos actions",
-        heroBtnLearn: "En savoir plus",
+        heroBtnPartner: "Devenir partenaire",
         aboutTitle: "À propos de CLIMARES",
-        aboutText1: "CLIMARES est une institution scientifique, technique et technologique de droit burundais spécialisée dans la production de connaissances, le développement de l'innovation, l'analyse des risques et l'aide à la décision dans les domaines du changement climatique, de l'environnement, de l'hydrométéorologie, de la gestion des ressources naturelles, de la réduction des risques de catastrophes et du développement durable.",
-        aboutText2: "Grâce à l'excellence scientifique et à la valorisation des données, nous soutenons les gouvernements, les organisations internationales, les universités et le secteur privé dans le renforcement de la résilience climatique et le développement durable fondé sur des preuves.",
-        aboutVision: "Vision : Pôle régional d'excellence",
+        aboutText1: "CLIMARES rapproche la science des décisions qui façonnent la vie des gens. Nous travaillons sur le climat, l'eau, les ressources naturelles, les risques de catastrophes et le développement durable, et nous transformons ce que nous apprenons en outils pratiques pour ceux qui en ont besoin.",
+        aboutText2: "Notre équipe réunit des chercheurs, des ingénieurs, des data scientists et des formateurs. Nous travaillons aux côtés des gouvernements, des organisations internationales, des universités et des entreprises pour comprendre les risques climatiques, les planifier et construire des solutions adaptées aux réalités africaines.",
+        aboutText3: "Notre conviction est simple : les bonnes décisions commencent par de bonnes preuves.",
+        aboutVisionTitle: "Notre Vision",
+        aboutVisionText: "Nous voulons être le centre de référence du Burundi pour la recherche climatique, l'innovation et la formation, et un partenaire de confiance dans la région des Grands Lacs. Nous imaginons des sociétés résilientes, inventives et capables de prospérer dans un climat changeant.",
+        aboutMissionTitle: "Notre Mission",
+        aboutMissionText: "Nous produisons des connaissances, construisons des solutions et formons les personnes qui les porteront. Concrètement, nous :",
+        aboutMissionItem1: "Aidons les communautés et les institutions à devenir plus résilientes au changement climatique",
+        aboutMissionItem2: "Soutenons l'utilisation durable des terres, de l'eau et des ressources naturelles",
+        aboutMissionItem3: "Fournissons aux décideurs des données fiables",
+        aboutMissionItem4: "Construisons des systèmes d'information et des outils d'aide à la décision",
+        aboutMissionItem5: "Encourageons l'innovation et les jeunes entrepreneurs scientifiques",
+        aboutMissionItem6: "Contribuons aux objectifs de développement nationaux et internationaux du Burundi",
         aboutBadge: "Recherche appliquée et innovation",
-        strategicTitle: "Domaines stratégiques",
-        strategicSubtitle: "Nos principaux domaines d'intervention, moteurs de résilience et de développement durable.",
+        strategicTitle: "Ce Que Nous Faisons",
+        strategicSubtitle: "Six domaines d'expertise, un objectif : un Burundi mieux préparé à un climat changeant.",
         slideStrategicAreaLabel: "Domaine stratégique",
         slide1Title: "Climat et Services Climatiques",
-        slide1Desc: "Services climatiques intégrés pour la planification, la gestion des risques et la résilience des systèmes socio-économiques.",
-        slide1Tag1: "Prévisions météo et climatiques",
-        slide1Tag2: "Variabilité et extrêmes climatiques",
-        slide1Tag3: "Planification de l'adaptation",
-        slide1Tag4: "Finance climatique",
+        slide1Desc: "Des informations climatiques fiables aident les agriculteurs, les planificateurs et les investisseurs à se préparer à ce qui vient.",
+        slide1Tag1: "Prévisions météo et saisonnières",
+        slide1Tag2: "Variabilité et événements extrêmes",
+        slide1Tag3: "Scénarios climatiques",
+        slide1Tag4: "Évaluations de vulnérabilité",
+        slide1Tag5: "Finance climatique",
         slide2Title: "Hydrologie et Ressources en Eau",
-        slide2Desc: "Solutions scientifiques et opérationnelles pour la gestion intégrée des ressources en eau.",
-        slide2Tag1: "Modélisation hydrologique",
+        slide2Desc: "L'eau est au cœur de la vie quotidienne et de l'économie burundaise. Nous aidons à la gérer sagement, en période d'abondance comme de pénurie.",
+        slide2Tag1: "Modélisation hydrologique et hydraulique",
         slide2Tag2: "Prévision des crues et sécheresses",
-        slide2Tag3: "GIRE",
-        slide2Tag4: "Suivi hydroclimatique",
+        slide2Tag3: "Suivi hydroclimatique",
+        slide2Tag4: "Analyse des bassins versants",
         slide3Title: "Réduction des Risques de Catastrophes",
-        slide3Desc: "Soutien aux institutions dans l'identification, l'évaluation et la gestion des risques liés au climat.",
+        slide3Desc: "Nous aidons les institutions à anticiper les risques et à agir avant que la catastrophe ne frappe.",
         slide3Tag1: "Évaluation multi-aléas",
         slide3Tag2: "Cartographie des risques",
-        slide3Tag3: "Action anticipatoire",
+        slide3Tag3: "Systèmes d'alerte précoce",
         slide3Tag4: "Gestion communautaire des risques",
-        slide4Title: "Recherche Scientifique et Développement",
-        slide4Desc: "La recherche constitue la base des activités de CLIMARES, moteur d'innovation et de preuves.",
-        slide4Tag1: "Changement climatique et environnement",
+        slide4Title: "Recherche Scientifique",
+        slide4Desc: "La recherche est le point de départ de tout ce que nous faisons. Nos programmes couvrent :",
+        slide4Tag1: "Changement climatique",
         slide4Tag2: "Agriculture intelligente face au climat",
-        slide4Tag3: "IA appliquée",
-        slide4Tag4: "Énergie durable",
+        slide4Tag3: "Santé et climat",
+        slide4Tag4: "Technologies numériques et IA appliquée",
         slide5Title: "Transformation Numérique et IA",
-        slide5Desc: "Solutions numériques avancées pour les données environnementales et climatiques.",
-        slide5Tag1: "Intelligence artificielle",
+        slide5Desc: "Nous utilisons des outils de données modernes pour rendre l'information environnementale plus rapide, plus claire et plus facile à utiliser.",
+        slide5Tag1: "Intelligence artificielle et apprentissage automatique",
         slide5Tag2: "Science des données",
-        slide5Tag3: "SIG et télédétection",
-        slide5Tag4: "Informatique en nuage",
+        slide5Tag3: "Télédétection et SIG",
+        slide5Tag4: "Informatique en nuage et plateformes",
         slide6Title: "Formation et Renforcement des Capacités",
-        slide6Desc: "Développement du capital humain par la formation professionnelle et le renforcement des capacités.",
-        slide6Tag1: "Formation professionnelle",
-        slide6Tag2: "Capacité institutionnelle",
-        slide6Tag3: "Encadrement académique",
-        slide6Tag4: "Programmes de mentorat",
-        approachTitle: "Approche Institutionnelle",
-        approachSubtitle: "Intégration de la science, de l'innovation et de l'action structurée autour de quatre axes stratégiques.",
-        approach1Title: "Valorisation des connaissances",
-        approach1Desc: "Collecte, traitement, analyse et diffusion des données scientifiques.",
-        approach2Title: "Systèmes d'aide à la décision",
-        approach2Desc: "Plateformes numériques et systèmes d'alerte transformant les données en action.",
-        approach3Title: "Renforcement institutionnel",
-        approach3Desc: "Développement des capacités techniques, organisationnelles et opérationnelles.",
-        approach4Title: "Politiques résilientes",
-        approach4Desc: "Analyses et recommandations pour intégrer les risques climatiques dans les décisions.",
-        projectsTitle: "Projets",
-        projectsSubtitle: "Explorez notre portefeuille de projets de résilience climatique et de développement durable.",
-        project1Title: "Système d'Alerte Précoce Climatique",
-        project1Desc: "Systèmes d'alerte précoce communautaires dans les régions sujettes aux catastrophes.",
-        project2Title: "Cartographie des Ressources en Eau",
-        project2Desc: "Évaluations hydrologiques pour une gestion durable de l'eau.",
-        project3Title: "Agriculture Intelligente face au Climat",
-        project3Desc: "Promotion de pratiques agricoles résilientes à travers le Burundi.",
-        researchTitle: "Recherche et Innovation",
-        researchSubtitle: "Recherche de pointe moteur d'innovation technologique et d'excellence scientifique.",
-        research1Title: "Programmes de Recherche Appliquée",
-        research1Desc: "Nos recherches portent sur le changement climatique, les sciences environnementales, l'agriculture intelligente face au climat, la santé et le climat, l'énergie durable, les technologies numériques et l'intelligence artificielle appliquée.",
-        research2Title: "Innovation et Incubation",
-        research2Desc: "Nous promouvons la recherche appliquée, l'innovation technologique, le développement de prototypes, l'incubation de projets innovants, le transfert de technologie et le soutien aux jeunes chercheurs et innovateurs.",
+        slide6Desc: "Le changement durable dépend de personnes qualifiées, c'est pourquoi nous investissons dans la prochaine génération d'experts.",
+        slide6Tag1: "Formation professionnelle certifiante",
+        slide6Tag2: "Renforcement des capacités institutionnelles",
+        slide6Tag3: "Encadrement académique et de recherche",
+        slide6Tag4: "Coaching technique et mentorat",
+        approachTitle: "Comment Nous Travaillons",
+        approachSubtitle: "La science, l'innovation et l'action ne comptent que lorsqu'elles sont connectées. Notre travail suit quatre étapes qui les relient.",
+        approach1Title: "Transformer les données en connaissances",
+        approach1Desc: "Nous collectons, analysons et partageons des données scientifiques que les gens peuvent réellement utiliser.",
+        approach2Title: "Construire des outils de décision",
+        approach2Desc: "Nous concevons des plateformes, des tableaux de bord et des systèmes d'alerte qui transforment l'information en action.",
+        approach3Title: "Renforcer les institutions",
+        approach3Desc: "Nous aidons nos partenaires à acquérir les compétences et les systèmes pour continuer par eux-mêmes.",
+        approach4Title: "Façonner des politiques résilientes",
+        approach4Desc: "Nous fournissons des analyses, des scénarios et des recommandations pour que le risque climatique fasse partie de chaque décision majeure.",
+        researchTitle: "Innovation et Incubation",
+        researchSubtitle: "Les bonnes idées méritent une chance de grandir. Grâce à notre programme d'innovation et d'incubation, nous aidons les étudiants, les jeunes diplômés, les chercheurs et les entrepreneurs à transformer leurs idées en projets réels.",
+        research1Title: "Ce que nous offrons :",
+        research1Item1: "Espace et soutien pour développer des technologies et des prototypes",
+        research1Item2: "Incubation et accélération de projets prometteurs",
+        research1Item3: "Mentorat par des scientifiques et des professionnels expérimentés",
+        research1Item4: "Aide pour les stages, les thèses et les projets de recherche appliquée",
+        research1Item5: "Transfert de technologie et soutien à l'entrepreneuriat scientifique",
+        research1Footer: "Notre objectif est de transformer la recherche en solutions qui fonctionnent sur le terrain, au Burundi et dans toute la région.",
         partnersTitle: "Partenariats et Coopération",
-        partnersSubtitle: "Partenariats stratégiques avec des institutions nationales, régionales et internationales.",
+        partnersSubtitle: "Nous ne pouvons pas y arriver seuls. Nous travaillons avec des partenaires qui partagent notre engagement pour un avenir résilient, notamment :",
         partner1: "Agences des Nations Unies",
-        partner2: "Universités",
+        partner2: "Universités et centres de recherche",
         partner3: "Institutions financières",
-        partner4: "Société civile",
+        partner4: "ONG et société civile",
+        partnersFooterText: "Ensemble, nous partageons les connaissances, innovons et réalisons des projets à impact réel. Intéressé à travailler avec nous ? Nous serions ravis d'échanger avec vous.",
+        partnerFormTitle: "Devenir partenaire",
+        partnerFirstName: "Prénom",
+        partnerLastName: "Nom",
+        partnerOrg: "Organisation",
+        partnerPosition: "Fonction",
+        partnerEmail: "Email",
+        partnerPhone: "Téléphone / WhatsApp",
+        partnerCountry: "Pays",
+        partnerType: "Type de partenaire",
+        partnerTypeSelect: "Sélectionnez...",
+        partnerTypeUN: "Agence des Nations Unies",
+        partnerTypeUniversity: "Université",
+        partnerTypeFinancial: "Institution financière",
+        partnerTypeNGO: "ONG / Société civile",
+        partnerTypeGov: "Gouvernement",
+        partnerTypePrivate: "Secteur privé",
+        partnerTypeOther: "Individu / autre",
+        partnerAreaLabel: "Domaine de partenariat",
+        partnerAreaSelect: "Sélectionnez un domaine",
+        areaResearch: "Études & recherche scientifique",
+        areaInnovation: "Innovation & incubation",
+        areaHydrology: "Hydrologie & ressources en eau",
+        areaClimate: "Climat & services climatiques",
+        areaDRR: "Réduction des risques de catastrophes",
+        areaDigital: "Transformation numérique & IA",
+        areaTraining: "Formation & renforcement des capacités",
+        areaFunding: "Financement / mécénat de projets",
+        areaOther: "Autre",
+        partnerMessage: "Message",
+        partnerConsent: "J'accepte que mes données soient utilisées pour traiter ma demande. Politique de confidentialité",
+        partnerSubmit: "Envoyer la demande",
+        partnerSuccessMsg: "Merci ! Votre demande de partenariat a bien été reçue. Notre équipe vous contactera sous 5 jours ouvrés.",
+        ambitionTitle: "Notre Ambition",
+        ambitionText: "Les risques climatiques et environnementaux augmentent. Nous croyons que la science, les données et la technologie peuvent aider le Burundi à y faire face, et nous avons l'intention de jouer notre rôle, pour les communautés d'aujourd'hui et pour les générations à venir.",
+        contactTitle: "Contactez-nous",
+        contactSubtitle: "Une question ou envie de travailler avec nous ? Envoyez-nous un message ou contactez-nous directement.",
+        contactFormName: "Nom complet",
+        contactFormEmail: "Email",
+        contactFormPhone: "Téléphone",
+        contactFormSubject: "Sujet",
+        contactFormSubjectOption: "Sélectionnez un sujet",
+        contactFormSubjectGeneral: "Informations générales",
+        contactFormSubjectPartnership: "Partenariat",
+        contactFormSubjectTraining: "Formation",
+        contactFormSubjectIncubation: "Incubation",
+        contactFormSubjectPress: "Presse",
+        contactFormSubjectOther: "Autre",
+        contactFormMessage: "Message",
+        contactFormSend: "Envoyer le message",
+        contactInfoTitle: "Informations de Contact",
+        contactInfoAddressLabel: "Adresse",
+        contactInfoEmailLabel: "Email",
+        contactInfoPhoneLabel: "Téléphone",
+        contactSocialTitle: "Suivez-nous",
+        contactWhatsAppBtn: "Écrivez-nous sur WhatsApp",
         footerTagline: "Recherche • Innovation • Intelligence Climatique • Aide à la Décision • Résilience • Développement Durable",
-        footerQuote: "\"Transformer la Science en Action pour un Avenir Résilient et Durable.\"",
+        footerQuote: "\"Transformer la science en action pour un avenir résilient et durable.\"",
         footerContactTitle: "Contact",
-        footerAddress: "Mukaza-Rohero, Avenue de l'université, Hôtel de ville - Rez de chaussée, Bureau No4",
+        footerAddress: "Mukaza-Rohero, Avenue de l'Université, Hôtel de Ville, rez-de-chaussée, Bureau No 4, Bujumbura, Burundi",
         footerLinksTitle: "Liens rapides",
-        footerCopyright: "© 2025 CLIMARES. Tous droits réservés. | Conçu pour l'impact."
+        footerCopyright: "© 2026 CLIMARES. Tous droits réservés. | Conçu pour l'impact."
       }
     };
 
@@ -686,9 +1084,13 @@
           el.textContent = dict[key];
         }
       });
-      // Update document lang attribute
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) {
+          el.placeholder = dict[key];
+        }
+      });
       document.documentElement.lang = lang;
-      // Update active button
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
       });
@@ -696,17 +1098,14 @@
 
     // ===== INITIALIZATION =====
     (function() {
-      // Init AOS
       AOS.init({ duration: 800, once: true, offset: 100 });
 
-      // Language switcher
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           setLanguage(btn.getAttribute('data-lang'));
         });
       });
 
-      // Mobile menu toggle
       const mobileMenuBtn = document.getElementById('mobile-menu-btn');
       const mobileMenu = document.getElementById('mobile-menu');
       mobileMenuBtn?.addEventListener('click', () => {
@@ -759,7 +1158,148 @@
       carouselEl.addEventListener('mouseenter', stopAutoPlay);
       carouselEl.addEventListener('mouseleave', startAutoPlay);
 
-      // Initialize language (English default)
+      // ===== B2: Dynamic area-of-partnership explanatory box =====
+      const partnershipAreaTexts = {
+        en: {
+          research: "Partnering with CLIMARES gives you access to a multidisciplinary team and local climate and environmental data, so we can co-produce rigorous studies, publish together and inform policy with solid evidence.",
+          innovation: "Our incubation programme takes young researchers, startups and innovators from idea to prototype, with scientific mentoring, technical support, networking and technology transfer. Partner with us to fund, mentor or develop new climate solutions.",
+          hydrology: "CLIMARES brings expertise in hydrological modelling, flood and drought forecasting and water resource management. Working together helps secure water access, reduce flood losses and plan resilient infrastructure.",
+          climate: "We provide weather and climate forecasts, analysis of extreme events, and support for adaptation planning and climate finance. Our partners get reliable information to plan ahead.",
+          drr: "Multi-hazard assessment, risk mapping, early warning and anticipatory action: by partnering with CLIMARES, you protect communities and investments before disaster strikes.",
+          digital: "AI, data science, GIS, remote sensing and cloud: we turn environmental data into decision-support tools. A natural fit for tech companies and institutions that want to innovate.",
+          training: "Certified training, institutional capacity building, academic supervision and mentoring: a partnership with CLIMARES builds the climate skills of your staff or students.",
+          funding: "Support concrete, high-impact projects such as early warning, climate-smart agriculture and water mapping. CLIMARES provides close monitoring, impact reports and visibility for its funders.",
+          other: "Have another idea for working together? Tell us about it below and our team will get back to you shortly."
+        },
+        fr: {
+          research: "Collaborer avec CLIMARES, c'est accéder à une équipe pluridisciplinaire et à des données climatiques et environnementales locales pour coproduire des études rigoureuses, publier ensemble et orienter les politiques publiques par des preuves solides.",
+          innovation: "Notre programme d'incubation accompagne les jeunes chercheurs, startups et innovateurs de l'idée au prototype : mentorat scientifique, appui technique, mise en réseau et transfert de technologie. Devenez partenaire pour financer, encadrer ou co-développer des solutions climatiques innovantes.",
+          hydrology: "CLIMARES apporte son expertise en modélisation hydrologique, prévision des crues et des sécheresses et gestion des ressources en eau. Un partenariat permet de sécuriser l'accès à l'eau, de réduire les pertes liées aux inondations et de planifier des infrastructures résilientes.",
+          climate: "Nous fournissons des prévisions météo et climatiques, des analyses des extrêmes et un appui à la planification de l'adaptation et à la finance climat. Nos partenaires disposent d'informations fiables pour anticiper et décider.",
+          drr: "Évaluation multirisque, cartographie des zones exposées, alerte précoce et action anticipatoire : en vous associant à CLIMARES, vous protégez les communautés et les investissements avant que la catastrophe ne survienne.",
+          digital: "Intelligence artificielle, science des données, SIG, télédétection et cloud : nous transformons les données environnementales en outils d'aide à la décision. Un partenariat idéal pour les entreprises tech et les institutions qui veulent innover.",
+          training: "Formations certifiantes, renforcement institutionnel, encadrement académique et mentorat : un partenariat avec CLIMARES développe les compétences de vos équipes ou de vos étudiants sur les enjeux climatiques.",
+          funding: "Soutenez des projets concrets à fort impact (alerte précoce, agriculture intelligente face au climat, cartographie de l'eau). CLIMARES assure un suivi rigoureux, des rapports d'impact et de la visibilité pour ses bailleurs.",
+          other: "Vous avez une autre idée de collaboration ? Décrivez la ci-dessous : notre équipe étudiera votre proposition et vous répondra rapidement."
+        }
+      };
+
+      const areaSelect = document.getElementById('partnershipArea');
+      const areaInfo = document.getElementById('partnershipAreaInfo');
+      if (areaSelect && areaInfo) {
+        areaSelect.addEventListener('change', function() {
+          const val = this.value;
+          if (val && partnershipAreaTexts[currentLang][val]) {
+            areaInfo.textContent = partnershipAreaTexts[currentLang][val];
+            areaInfo.classList.remove('hidden');
+          } else {
+            areaInfo.classList.add('hidden');
+          }
+        });
+      }
+
+      // Re-render box on language change
+      const originalSetLanguage = setLanguage;
+      setLanguage = function(lang) {
+        originalSetLanguage(lang);
+        if (areaSelect && areaSelect.value && partnershipAreaTexts[lang][areaSelect.value]) {
+          areaInfo.textContent = partnershipAreaTexts[lang][areaSelect.value];
+        }
+      };
+
+      // ===== B1: Become a partner form submit — sends to Django =====
+      const becomePartnerForm = document.getElementById('becomePartnerForm');
+      if (becomePartnerForm) {
+        becomePartnerForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = this.querySelector('button[type="submit"]');
+          const originalText = btn.textContent;
+          btn.disabled = true;
+          btn.textContent = currentLang === 'fr' ? 'Envoi en cours…' : 'Sending…';
+
+          const fd = new FormData(this);
+          // Normalise checkbox to "on"/"" so Django BooleanField parses it
+          fd.set('consent', this.querySelector('#consent').checked ? 'on' : '');
+
+          try {
+            const res = await fetch('/api/become-partner/', {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content,
+              },
+              body: fd,
+            });
+            const data = await res.json();
+
+            if (res.ok && data.ok) {
+              document.getElementById('partnerFormSuccess').classList.remove('hidden');
+              this.reset();
+              if (areaInfo) areaInfo.classList.add('hidden');
+            } else {
+              console.error('Validation errors:', data.errors);
+              alert(
+                currentLang === 'fr'
+                  ? 'Veuillez vérifier les champs du formulaire (message ≥ 500 caractères, consentement obligatoire).'
+                  : 'Please check the form fields (message ≥ 500 characters, consent required).'
+              );
+            }
+          } catch (err) {
+            console.error(err);
+            alert(
+              currentLang === 'fr'
+                ? 'Une erreur est survenue. Réessayez plus tard.'
+                : 'Something went wrong. Please try again later.'
+            );
+          } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+          }
+        });
+      }
+
+      // ===== B3: Contact form submit — sends to Django =====
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = this.querySelector('button[type="submit"]');
+          const originalText = btn.textContent;
+          btn.disabled = true;
+          btn.textContent = currentLang === 'fr' ? 'Envoi en cours…' : 'Sending…';
+
+          try {
+            const res = await fetch('/api/contact/', {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content,
+              },
+              body: new FormData(this),
+            });
+            const data = await res.json();
+
+            if (res.ok && data.ok) {
+              alert(currentLang === 'fr'
+                ? 'Merci ! Votre message a bien été envoyé.'
+                : 'Thank you! Your message has been sent.');
+              this.reset();
+            } else {
+              console.error('Validation errors:', data.errors);
+              alert(currentLang === 'fr'
+                ? 'Veuillez vérifier les champs du formulaire.'
+                : 'Please check the form fields.');
+            }
+          } catch (err) {
+            console.error(err);
+            alert(currentLang === 'fr'
+              ? 'Une erreur est survenue. Réessayez plus tard.'
+              : 'Something went wrong. Please try again later.');
+          } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+          }
+        });
+      }
+
       setLanguage('en');
     })();
   </script>
